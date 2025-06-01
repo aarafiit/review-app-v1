@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h4>Add a New Post</h4>
+        </div>
+        <div class="card-body">
+          <app-review-form></app-review-form>
+        </div>
+      </div>
+
+      <div class="mt-4 col-md-4">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search reviews or universities..."
+            [(ngModel)]="searchText"
+          />
+          <button
+            class="btn btn-outline-primary"
+            type="button"
+            (click)="onSearch()">
+            Search
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5">
+          <app-review-list></app-review-list>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer text-white text-center py-3 mt-5 shadow-sm" style="background-color: #353533">
+  <div class="container">
+    <span>&copy; 2025 Fuck University, Fuck Education System — All Rights Reserved</span>
+  </div>
+</footer>
+

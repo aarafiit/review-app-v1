@@ -1,0 +1,18 @@
+@if(showLabel) {
+  <label for="typeahead-format">{{title}}</label>
+}
+
+<input #instance="ngbTypeahead"
+       id="typeahead-format"
+       type="text"
+       class="form-control"
+       [class.form-control-sm]="showSmForm"
+       [(ngModel)]="model"
+       [ngbTypeahead]="search"
+       [inputFormatter]="formatter"
+       (ngModelChange)="changeModel(model)"
+       [resultFormatter]="formatter"
+       [placeholder]="title"
+       [disabled]="disabled"
+       (click)="openTypeahead(instance)"
+/>

@@ -1,0 +1,43 @@
+<form [formGroup]="reviewForm" (ngSubmit)="onSubmit()" class="p-2 rounded bg-white">
+  <div class="mb-4">
+    <label class="form-label fw-semibold">Select University</label>
+    <searchable-input
+      [title]="universityId ? universityId.name : 'Search Here'"
+      url-to-search="/institutes"
+      [showLabel]="false"
+      [showSmForm]="false"
+      [(ngModel)]="universityId"
+      (on-select)="onUniversitySelect($event)">
+    </searchable-input>
+    @if (reviewForm.get('instituteId')?.invalid && reviewForm.get('instituteId')?.touched) {
+      <div class="text-danger mt-1 small">
+        ❗ Please select a university
+      </div>
+    }
+  </div>
+
+  <div class="mb-4">
+    <textarea
+      id="description"
+      class="form-control"
+      rows="5"
+      formControlName="description"
+      placeholder="Write something about your experience..."
+      style="background-color: #f8f9fa; border-radius: 0.5rem;">
+    </textarea>
+    @if (reviewForm.get('description')?.invalid && reviewForm.get('description')?.touched) {
+      <div class="text-danger mt-1 small">
+        ❗ Description is required
+      </div>
+    }
+  </div>
+
+  <div class="text-end">
+    <button
+      type="submit"
+      class="btn btn-primary px-4 py-2 shadow-sm"
+      [disabled]="reviewForm.invalid">
+      Post Review
+    </button>
+  </div>
+</form>

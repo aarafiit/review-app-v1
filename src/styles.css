@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* In src/styles.css */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Or choose another theme: */
+/* @import '@angular/material/prebuilt-themes/deeppurple-amber.css'; */
+/* @import '@angular/material/prebuilt-themes/pink-bluegrey.css'; */
+/* @import '@angular/material/prebuilt-themes/purple-green.css'; */
+
+/* In src/styles.css */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* In your component CSS or styles.css */
+.mat-mdc-fab {
+  font-family: Roboto, "Helvetica Neue", sans-serif !important;
+}
+
+.mat-mdc-fab.mat-mdc-fab-extended {
+  font-family: Roboto, "Helvetica Neue", sans-serif !important;
+}
+/* Ensure full height layout */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Let app-root grow and push footer down */
+app-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+

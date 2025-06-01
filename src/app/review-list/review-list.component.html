@@ -1,0 +1,26 @@
+@if (reviewList.length > 0) {
+  @for (reviews of reviewList; track reviews.id) {
+    <div class="card mt-2">
+      <div class="card-header">
+        {{reviews.instituteName}}
+      </div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>{{reviews.description}}</p>
+          <footer class="blockquote-footer"><cite title="Source Title">Posted on {{reviews.createdAt | date : 'medium'}}</cite></footer>
+        </blockquote>
+      </div>
+    </div>
+  }
+  <mat-paginator [length]="totalItems"
+                 [pageSize]="pageSize"
+                 [pageIndex]="currentPage"
+                 [pageSizeOptions]="[5, 10, 25]"
+                 (page)="onPageChange($event)">
+  </mat-paginator>
+} @else {
+  <div class="alert alert-info mt-3">
+    No reviews found. Be the first to post one!
+  </div>
+}
+
