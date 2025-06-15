@@ -1,0 +1,14 @@
+.btn-custom {
+  padding: 0.375rem 0.75rem; /* smaller padding */
+  font-size: 0.875rem;       /* slightly smaller text */
+  border-radius: 0.25rem;    /* subtle rounding */
+  background-color: #8DBCC7; /* primary blue (Bootstrap) */
+  color: white;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-custom:hover {
+  background-color: #6f939c; /* darker on hover */
+}
+

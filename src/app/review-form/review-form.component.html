@@ -1,43 +1,218 @@
-<form [formGroup]="reviewForm" (ngSubmit)="onSubmit()" class="p-2 rounded bg-white">
-  <div class="mb-4">
-    <label class="form-label fw-semibold">Select University</label>
-    <searchable-input
-      [title]="universityId ? universityId.name : 'Search Here'"
-      url-to-search="/institutes"
-      [showLabel]="false"
-      [showSmForm]="false"
-      [(ngModel)]="universityId"
-      (on-select)="onUniversitySelect($event)">
-    </searchable-input>
-    @if (reviewForm.get('instituteId')?.invalid && reviewForm.get('instituteId')?.touched) {
-      <div class="text-danger mt-1 small">
-        ❗ Please select a university
-      </div>
-    }
-  </div>
+<div class="container-fluid bg-white min-vh-100 py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 w-90">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+          <!-- Header Section -->
+          <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark mb-2">Share Your Story</h2>
+            <p class="text-muted small mb-0">Tell others about your experience with a university or organization.</p>
+          </div>
 
-  <div class="mb-4">
-    <textarea
-      id="description"
-      class="form-control"
-      rows="5"
-      formControlName="description"
-      placeholder="Write something about your experience..."
-      style="background-color: #f8f9fa; border-radius: 0.5rem;">
-    </textarea>
-    @if (reviewForm.get('description')?.invalid && reviewForm.get('description')?.touched) {
-      <div class="text-danger mt-1 small">
-        ❗ Description is required
-      </div>
-    }
-  </div>
+          <!-- Guidelines -->
+          <div class="bg-light rounded-3 p-3 mb-4">
+            <ul class="mb-0 small text-muted">
+              <li>Be honest and specific about your experience</li>
+              <li>Focus on facts rather than personal attacks</li>
+              <li>Include relevant details that would be helpful to others</li>
+            </ul>
+          </div>
 
-  <div class="text-end">
-    <button
-      type="submit"
-      class="btn btn-primary px-4 py-2 shadow-sm"
-      [disabled]="reviewForm.invalid">
-      Post Review
-    </button>
+          <!-- Form -->
+          <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+
+            <!-- University Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark mb-2">
+                University/Organization Name <span class="text-danger">*</span>
+              </label>
+              <searchable-input
+                [title]="universityId ? '['+universitySearch.alias+']' + universitySearch.name : 'Enter university or organization name'"
+                url-to-search="/institutes"
+                [showLabel]="false"
+                [showSmForm]="false"
+                [(ngModel)]="universityId"
+                [formatter]="UniversitySearchResultFormatter"
+                (on-select)="onUniversitySelect($event)"
+                class="form-control border-0 shadow-sm "
+                style="background-color: #f8f9fa; border-radius: 0.5rem;">
+              </searchable-input>
+              <div class="text-muted small mt-1">0/50 characters</div>
+              @if (isFieldInvalid('instituteId')) {
+                <div class="text-danger mt-1 small">
+                  <mat-icon class="me-1" style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  {{ getFieldError('instituteId') }}
+                </div>
+              }
+            </div>
+
+            <!-- Review Type -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark mb-2">
+                Review Type <span class="text-danger">*</span>
+              </label>
+              <select class="form-select border-0 shadow-sm"
+                      style="background-color: #f8f9fa; border-radius: 0.5rem; padding: 12px 16px;"
+                      formControlName="reviewType">
+                <option [ngValue]="null">Select review type</option>
+                <option [ngValue]="ReviewType.POSITIVE">Positive</option>
+                <option [ngValue]="ReviewType.NEGATIVE">Negative</option>
+                <option [ngValue]="ReviewType.MIXED">Mixed</option>
+              </select>
+              @if (isFieldInvalid('reviewType')) {
+                <div class="text-danger mt-1 small">
+                  {{ getFieldError('reviewType') }}
+                </div>
+              }
+            </div>
+
+            <!-- Title Input -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark mb-2">
+                Title <span class="text-danger">*</span>
+              </label>
+              <input type="text"
+                     class="form-control border-0 shadow-sm"
+                     formControlName="title"
+                     placeholder="Enter a title for your story"
+                     style="background-color: #f8f9fa; border-radius: 0.5rem;">
+              <div class="text-muted small mt-1">{{ getCharacterCount('title') }}/100 characters</div>
+              @if (isFieldInvalid('title')) {
+                <div class="text-danger mt-1 small">
+                  {{ getFieldError('title') }}
+                </div>
+              }
+            </div>
+
+
+
+            <!-- Story/Review Content -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark mb-2">
+                Your Story <span class="text-danger">*</span>
+              </label>
+
+              <!-- Text Formatting Toolbar -->
+              <!-- Toolbar (keep as-is, works with execCommand) -->
+              <div class="bg-white border rounded-top p-2 d-flex align-items-center gap-2"
+                   style="border-bottom: none !important;">
+                <button type="button"
+                        class="btn btn-sm"
+                        [class.btn-secondary]="isBold"
+                        [class.btn-outline-secondary]="!isBold"
+                        (click)="toggleBold()"
+                        title="Bold">
+                  <strong>B</strong>
+                </button>
+                <button type="button"
+                        class="btn btn-sm"
+                        [class.btn-secondary]="isItalic"
+                        [class.btn-outline-secondary]="!isItalic"
+                        (click)="toggleItalic()"
+                        title="Italic">
+                  <em>I</em>
+                </button>
+                <button type="button"
+                        class="btn btn-sm"
+                        [class.btn-secondary]="isUnderline"
+                        [class.btn-outline-secondary]="!isUnderline"
+                        (click)="toggleUnderline()"
+                        title="Underline">
+                  <u>U</u>
+                </button>
+                <div class="vr"></div>
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary border-0"
+                        (click)="insertBulletList()"
+                        title="Bullet List">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">format_list_bulleted</mat-icon>
+                </button>
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary border-0"
+                        (click)="insertNumberedList()"
+                        title="Numbered List">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">format_list_numbered</mat-icon>
+                </button>
+              </div>
+
+              <!-- contenteditable div instead of textarea -->
+              <!-- remove [innerHTML], just plain contenteditable -->
+              <div
+              #description
+              id="description"
+              class="form-control border-0 shadow-sm rounded-bottom"
+              contenteditable="true"
+              dir="ltr"
+              style="min-height: 200px; background-color: #ffffff; border-top: 1px solid #dee2e6;"
+              (input)="onContentChange($event)">
+            </div>
+
+
+
+
+              <!-- Character count -->
+              <div class="d-flex justify-content-between align-items-center mt-1">
+                <div class="small {{ getCharacterCountClass('description', 1000) }}">
+                  {{ getCharacterCount('description') }}/1000 characters
+                </div>
+                @if (getCharacterCount('description') < 50) {
+                  <div class="small text-muted">
+                    Minimum 50 characters required
+                  </div>
+                }
+              </div>
+
+              @if (isFieldInvalid('description')) {
+                <div class="text-danger mt-2 small">
+                  <mat-icon class="me-1" style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  {{ getFieldError('description') }}
+                </div>
+              }
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="mb-4">
+              <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="agreeTerms"
+                       formControlName="agreeTerms">
+                <label class="form-check-label small text-muted" for="agreeTerms">
+                  I agree to the <a href="#" class="text-primary text-decoration-none">Terms and Conditions</a>
+                </label>
+              </div>
+              @if (isFieldInvalid('agreeTerms')) {
+                <div class="text-danger mt-1 small">
+                  <mat-icon class="me-1" style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  {{ getFieldError('agreeTerms') }}
+                </div>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <!-- Submit Button -->
+            <div class="text-end">
+              <button
+                type="submit"
+                class="btn btn-primary fw-semibold shadow-sm px-4 py-2"
+                [disabled]="!isFormValid"
+                style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); border: none; border-radius: 0.5rem;">
+
+                @if (isSubmitting) {
+                  <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  Submitting...
+                } @else {
+                  Submit Story
+                }
+              </button>
+            </div>
+
+
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-</form>
+</div>

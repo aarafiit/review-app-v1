@@ -1,24 +1,83 @@
-section {
-  display: flex;
-  align-items: center;
+/* Add these styles to your component CSS or global styles */
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  background-color: #ffffff;
 }
 
-.example-label {
-  font-size: 14px;
-  margin: 0 16px 0 8px;
-  min-width: 120px;
+.form-control::placeholder {
+  color: #6c757d;
+  font-style: italic;
 }
 
-.example-button-row {
-  max-width: 600px;
+.btn-primary:disabled {
+  background: #6c757d;
+  border-color: #6c757d;
+  opacity: 0.7;
 }
 
-.example-button-row .mat-mdc-button-base {
-  margin: 8px 8px 8px 0;
+.btn-primary:not(:disabled):hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
-.example-flex-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Toolbar button styles */
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #e9ecef;
+  border-color: transparent;
+  color: #495057;
+}
+
+/* Character counter animation */
+.character-count {
+  transition: color 0.3s ease;
+}
+
+.character-count.near-limit {
+  color: #ffc107;
+}
+
+.character-count.at-limit {
+  color: #dc3545;
+}
+
+/* Custom searchable input styling */
+searchable-input .form-control {
+  background-color: #f8f9fa !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .btn-lg {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+}
+#description {
+  direction: ltr;
+  unicode-bidi: normal;
 }

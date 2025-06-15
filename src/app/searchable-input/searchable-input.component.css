@@ -5,3 +5,25 @@ searchable-input ngb-typeahead-window {
   max-height: 400px;
   will-change: auto !important;
 }
+
+
+::ng-deep .dropdown-menu {
+  max-height: 20%; /* or whatever height you want */
+  overflow-y: auto;
+}
+
+::ng-deep .dropdown-menu {
+  width: 80% !important;
+}
+
+::ng-deep .dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+::ng-deep .dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+
+

@@ -40,4 +40,34 @@ app-root {
   display: flex;
   flex-direction: column;
 }
+/* Global container for 80% width */
+/* Global container for 90% width */
+.main-container {
+  width: 90%;
+  max-width: 1400px; /* Optional: increased max-width for larger screens */
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .main-container {
+    width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    width: 98%;
+    padding: 0 10px;
+  }
+}
+
+/* Navbar specific styling */
+.navbar .main-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+}
 
