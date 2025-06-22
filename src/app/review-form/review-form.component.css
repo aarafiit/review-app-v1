@@ -47,6 +47,11 @@
 /* Character counter animation */
 .character-count {
   transition: color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.85rem;
 }
 
 .character-count.near-limit {
@@ -55,6 +60,29 @@
 
 .character-count.at-limit {
   color: #dc3545;
+}
+
+.character-count-progress {
+  height: 4px;
+  background-color: #e9ecef;
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.character-count-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #17a2b8);
+  transition: width 0.3s ease;
+}
+
+.character-count-bar.near-limit {
+  background: linear-gradient(90deg, #ffc107, #fd7e14);
+}
+
+.character-count-bar.at-limit {
+  background: linear-gradient(90deg, #fd7e14, #dc3545);
 }
 
 /* Custom searchable input styling */
@@ -80,4 +108,44 @@ searchable-input .form-control {
 #description {
   direction: ltr;
   unicode-bidi: normal;
+  padding: 12px 16px;
+  min-height: 200px;
+  transition: all 0.3s ease;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+#description:focus {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+#description:empty:before {
+  content: 'Share your experience in detail...';
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* Styling for formatted content */
+#description b, #description strong {
+  font-weight: bold;
+  color: #212529;
+}
+
+#description i, #description em {
+  font-style: italic;
+}
+
+#description u {
+  text-decoration: underline;
+}
+
+#description ul, #description ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+#description ul li, #description ol li {
+  margin-bottom: 4px;
 }

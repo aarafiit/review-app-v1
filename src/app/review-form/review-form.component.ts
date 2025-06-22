@@ -6,9 +6,10 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
 import {ReviewService} from "../reviews/service/review.service";
 import {CommonModule} from '@angular/common';
-import {RouterModule} from "@angular/router";
+import {Router, RouterModule} from "@angular/router";
 import {ReviewType} from "../Enum/ReviewType";
 import {UniversitySearch} from "../model/search.model";
+import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Component({
   selector: 'app-review-form',
@@ -31,7 +32,7 @@ export class ReviewFormComponent {
 
   reviewForm: FormGroup | any;
   universitySearch: UniversitySearch = new UniversitySearch();
-  universityId?: number;
+  universityId?: any;
   page: number = 0;
   size: number = 10;
   isSubmitting: boolean = false;
@@ -45,7 +46,8 @@ export class ReviewFormComponent {
 
   constructor(
     private fb: FormBuilder,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private router: Router
   ) {
     this.initializeForm();
   }
@@ -66,6 +68,8 @@ export class ReviewFormComponent {
       instituteId: $event.id
     });
     this.universitySearch = $event;
+    this.universityId = $event.id;
+    console.log(this.universityId);
   }
 
   // Character count functionality
@@ -157,6 +161,9 @@ export class ReviewFormComponent {
         this.reviewSubmitted.emit(true);
         this.isSubmitting = false;
 
+        // Navigate to home page after successful submission
+        this.router.navigate(['/']);
+
         // You can add a success notification here
         // this.notificationService.success('Your story has been submitted successfully!');
       },
@@ -176,22 +183,31 @@ export class ReviewFormComponent {
     });
   }
 
-  resetForm() {
+  @ViewChild('description') descriptionElement!: ElementRef;
 
+  resetForm() {
     this.universitySearch = new UniversitySearch();
     this.isSubmitting = false;
     this.isBold = false;
     this.isItalic = false;
     this.isUnderline = false;
+    this.universityId = null;
 
     this.reviewForm.reset({
       instituteId: null,
-      reviewType: '',
+      reviewType: null,
+      title: '',
       description: '',
       rating: 0,
       agreeTerms: false
     });
+
+    // Manually clear contenteditable div
+    if (this.descriptionElement?.nativeElement) {
+      this.descriptionElement.nativeElement.innerHTML = '';
+    }
   }
+
 
   // Utility method to check if form is ready to submit
   get isFormValid(): boolean {
@@ -268,11 +284,12 @@ export class ReviewFormComponent {
   }
 
   UniversitySearchResultFormatter = (result: UniversitySearch) => {
-    return '['+ result.alias+']'+ ' '+ result.name.toUpperCase();
+    return '['+ result.alias?.toUpperCase()+']'+ ' '+ result.name.toUpperCase();
   };
 
 
 
   protected readonly ReviewType = ReviewType;
   protected readonly Symbol = Symbol;
+  protected readonly Math = Math;
 }

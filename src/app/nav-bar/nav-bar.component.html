@@ -1,54 +1,70 @@
 <div class="app-container">
-  <!-- Oak Thu Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-2">
+  <!-- Modern Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top">
     <div class="main-container">
       <!-- Logo and Brand -->
       <a class="navbar-brand d-flex align-items-center" routerLink="/home">
         <div class="brand-icon me-2">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="16" fill="#17a2b8"/>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="16" fill="#6a11cb"/>
             <path d="M12 10h8v2h-6v4h5v2h-5v4h6v2h-8V10z" fill="white"/>
             <path d="M10 8h12v2H10V8z" fill="white"/>
           </svg>
         </div>
-        <span class="fw-bold text-dark fs-6">University Management</span>
+        <span class="brand-text">University Reviews</span>
       </a>
 
       <!-- Mobile Toggle Button -->
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <!-- Navbar Content -->
       <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
         <!-- Center: Search Bar -->
-        <div class="d-flex justify-content-center flex-grow-1">
-          <form class="d-flex w-75" (ngSubmit)="onSearch()">
-            <div class="input-group w-100">
+        <div class="search-container">
+          <form class="search-form" (ngSubmit)="onSearch()">
+            <div class="input-group">
+              <span class="input-group-text search-icon">
+                <i class="material-icons">search</i>
+              </span>
               <input
                 class="form-control search-input"
                 type="search"
-                placeholder="Search by university name..."
+                placeholder="Search universities..."
                 [(ngModel)]="searchText"
                 name="search"
                 (keypress)="onSearchKeypress($event)"
-                style="box-shadow: none; height: 36px; font-size: 0.875rem; padding: 0.25rem 0.75rem;"
+                aria-label="Search"
               />
             </div>
           </form>
         </div>
 
         <!-- Right side: Nav links -->
-        <ul class="navbar-nav align-items-center ms-3">
+        <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link fw-medium px-2 small fs-6" routerLink="/home" routerLinkActive="active">Home</a>
+            <a class="nav-link" routerLink="/home" routerLinkActive="active" (click)="setActiveTab('home')">
+              <i class="material-icons nav-icon">home</i>
+              <span>Home</span>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fw-medium px-2 small fs-6" routerLink="/universities" routerLinkActive="active">Universities</a>
+            <a class="nav-link" routerLink="/universities" routerLinkActive="active" (click)="setActiveTab('universities')">
+              <i class="material-icons nav-icon">school</i>
+              <span>Universities</span>
+            </a>
           </li>
-          <li class="nav-item ms-2">
-            <button class="btn btn-custom btn-sm px-3 py-1" routerLink="/share-story" routerLinkActive="active">
-              Share Story
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/reviews" routerLinkActive="active" (click)="setActiveTab('reviews')">
+              <i class="material-icons nav-icon">rate_review</i>
+              <span>Reviews</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <button class="btn-share" routerLink="/share-story">
+              <i class="material-icons">add</i>
+              <span>Share Experience</span>
             </button>
           </li>
         </ul>

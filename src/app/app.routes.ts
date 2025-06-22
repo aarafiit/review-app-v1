@@ -3,6 +3,7 @@ import {ReviewListComponent} from "./review-list/review-list.component";
 import {NgModule} from "@angular/core";
 import {ReviewsComponent} from "./reviews/reviews.component";
 import {ReviewFormComponent} from "./review-form/review-form.component";
+import {ReviewDetailsComponent} from "./review-details/review-details.component";
 
 export const routes: Routes = [
   {
@@ -16,5 +17,9 @@ export const routes: Routes = [
   {
     path: 'share-story',
     component: ReviewFormComponent
+  },
+  {
+    path: 'review/:id',
+    component: ReviewDetailsComponent
   }
 ];

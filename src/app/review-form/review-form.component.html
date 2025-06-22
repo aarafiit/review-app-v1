@@ -27,17 +27,16 @@
                 University/Organization Name <span class="text-danger">*</span>
               </label>
               <searchable-input
-                [title]="universityId ? '['+universitySearch.alias+']' + universitySearch.name : 'Enter university or organization name'"
+                [title]="universityId ? '['+universitySearch.alias?.toUpperCase()+']' + universitySearch.name : 'Enter university or organization name'"
                 url-to-search="/institutes"
                 [showLabel]="false"
                 [showSmForm]="false"
-                [(ngModel)]="universityId"
                 [formatter]="UniversitySearchResultFormatter"
                 (on-select)="onUniversitySelect($event)"
                 class="form-control border-0 shadow-sm "
                 style="background-color: #f8f9fa; border-radius: 0.5rem;">
               </searchable-input>
-              <div class="text-muted small mt-1">0/50 characters</div>
+              <div class="text-muted small mt-1">University/Organization name</div>
               @if (isFieldInvalid('instituteId')) {
                 <div class="text-danger mt-1 small">
                   <mat-icon class="me-1" style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
@@ -76,7 +75,15 @@
                      formControlName="title"
                      placeholder="Enter a title for your story"
                      style="background-color: #f8f9fa; border-radius: 0.5rem;">
-              <div class="text-muted small mt-1">{{ getCharacterCount('title') }}/100 characters</div>
+              <div class="character-count {{ getCharacterCountClass('title', 100) }}">
+                <div>{{ getCharacterCount('title') }}/100 characters</div>
+                <div>{{ Math.floor((getCharacterCount('title') / 100) * 100) }}%</div>
+              </div>
+              <div class="character-count-progress">
+                <div class="character-count-bar {{ getCharacterCountClass('title', 100) }}"
+                     [style.width.%]="Math.min(100, (getCharacterCount('title') / 100) * 100)">
+                </div>
+              </div>
               @if (isFieldInvalid('title')) {
                 <div class="text-danger mt-1 small">
                   {{ getFieldError('title') }}
@@ -135,31 +142,40 @@
                 </button>
               </div>
 
-              <!-- contenteditable div instead of textarea -->
-              <!-- remove [innerHTML], just plain contenteditable -->
+              <!-- Enhanced contenteditable div for story input -->
               <div
               #description
               id="description"
               class="form-control border-0 shadow-sm rounded-bottom"
               contenteditable="true"
               dir="ltr"
-              style="min-height: 200px; background-color: #ffffff; border-top: 1px solid #dee2e6;"
-              (input)="onContentChange($event)">
+              (input)="onContentChange($event)"
+              style="border-top: 1px solid #dee2e6; background-color: #ffffff;">
             </div>
 
 
 
 
-              <!-- Character count -->
-              <div class="d-flex justify-content-between align-items-center mt-1">
-                <div class="small {{ getCharacterCountClass('description', 1000) }}">
+              <!-- Character count with progress bar -->
+              <div class="character-count {{ getCharacterCountClass('description', 1000) }}">
+                <div>
                   {{ getCharacterCount('description') }}/1000 characters
+                  @if (getCharacterCount('description') < 50) {
+                    <span class="ms-2 text-muted">
+                      (Minimum 50 characters required)
+                    </span>
+                  }
                 </div>
-                @if (getCharacterCount('description') < 50) {
-                  <div class="small text-muted">
-                    Minimum 50 characters required
-                  </div>
-                }
+                <div>
+                  {{ Math.floor((getCharacterCount('description') / 1000) * 100) }}%
+                </div>
+              </div>
+
+              <!-- Progress bar for character count -->
+              <div class="character-count-progress">
+                <div class="character-count-bar {{ getCharacterCountClass('description', 1000) }}"
+                     [style.width.%]="Math.min(100, (getCharacterCount('description') / 1000) * 100)">
+                </div>
               </div>
 
               @if (isFieldInvalid('description')) {

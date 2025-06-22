@@ -1,0 +1,67 @@
+<div class="container mt-5">
+  <!-- Loading Indicator -->
+  <div class="text-center my-5" *ngIf="isLoading">
+    <mat-icon class="loading-icon">sync</mat-icon>
+    <p>Loading review details...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger" *ngIf="error">
+    <mat-icon>error</mat-icon> {{ error }}
+  </div>
+
+  <!-- Review Details -->
+  <div class="review-details" *ngIf="!isLoading && review">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <button mat-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon> Back to Reviews
+      </button>
+      <div class="review-type-chip">
+        <mat-chip [color]="review.reviewType === 'Positive' ? 'primary' :
+                          review.reviewType === 'Mixed' ? 'accent' : 'warn'"
+                 [matTooltip]="review.reviewType + ' Review'"
+                 disableRipple>
+          <mat-icon *ngIf="review.reviewType === '1'">thumb_up</mat-icon>
+          <mat-icon *ngIf="review.reviewType === '2'">thumbs_up_down</mat-icon>
+          <mat-icon *ngIf="review.reviewType === '0'">thumb_down</mat-icon>
+          {{ review.reviewType }}
+        </mat-chip>
+      </div>
+    </div>
+
+    <mat-card class="review-card">
+      <mat-card-header>
+        <div mat-card-avatar class="institution-avatar">
+          <mat-icon>school</mat-icon>
+        </div>
+        <mat-card-title>{{ review.title }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ review.instituteName }}
+          <span class="date-info">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Star Rating Display -->
+        <div class="rating-display" *ngIf="review.rating">
+          <mat-icon *ngFor="let star of getStarArray(review.rating)" color="accent">star</mat-icon>
+          <mat-icon *ngFor="let star of getStarArray(5 - (review.rating || 0))" color="accent">star_border</mat-icon>
+          <span class="rating-value">{{ review.rating }}/5</span>
+        </div>
+
+        <!-- Full Review Content -->
+        <div class="review-content mt-4" [innerHTML]="review.description"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Not Found Message -->
+  <div class="text-center my-5" *ngIf="!isLoading && !review && !error">
+    <mat-icon class="not-found-icon">sentiment_dissatisfied</mat-icon>
+    <h3>Review Not Found</h3>
+    <p>The review you're looking for doesn't exist or has been removed.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      Back to Reviews
+    </button>
+  </div>
+</div>

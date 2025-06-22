@@ -1,50 +1,93 @@
 <div class="reviews-container">
-
+  <!-- Hero Section with Modern Design -->
   <section class="hero-section">
     <div class="hero-content">
       <h1 class="hero-title">Real Experiences. Real Stories.</h1>
       <p class="hero-description">
         A platform where people share their experiences with University and Faculty.
       </p>
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" routerLink="/review-form">
+          <mat-icon>add</mat-icon> Share Your Experience
+        </button>
+      </div>
     </div>
   </section>
-  <!-- Reviews List -->
-  <div class="reviews-grid">
-    <div class="review-card" *ngFor="let review of reviews">
-      <div class="review-header">
-        <div class="company-info">
-          <div class="company-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="company-name">{{ review.instituteName }}</p>
-            <small class="text-muted">{{ review.createdAt | date : 'MMM dd, yyyy' }}</small>
-          </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-icon class="loading-icon">sync</mat-icon>
+    <p>Loading reviews...</p>
+  </div>
+
+  <!-- Reviews List with Enhanced UI -->
+  <div class="reviews-grid" *ngIf="!isLoading && reviewList?.length > 0">
+    <mat-card class="review-card" *ngFor="let review of reviewList">
+      <mat-card-header>
+        <div mat-card-avatar class="institution-avatar">
+          <mat-icon>school</mat-icon>
         </div>
-        <span class="review-badge"
-              [class.positive]="review.reviewType === 'Positive'"
-              [class.neutral]="review.reviewType === 'Mixed'"
-        >
-        {{ review.reviewType }}
-      </span>
-      </div>
+        <mat-card-title>{{ review.title }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ review.instituteName }}
+          <span class="date-info">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
+        </mat-card-subtitle>
+        <div class="review-type-chip">
+          <mat-chip
+            [ngClass]="{
+            'positive-chip': review.reviewType === 1,
+            'negative-chip': review.reviewType === 0,
+            'mixed-chip': review.reviewType === 2
+          }"
+            disableRipple
+          >
+    <span class="chip-text fw-bold">
+      {{ review.reviewType === 1 ? 'Positive' : review.reviewType === 0 ? 'Negative' : 'Mixed' }}
+    </span>
+          </mat-chip>
+        </div>
 
-      <h3 class="review-title">{{ review.title }}</h3>
+      </mat-card-header>
 
-      <div class="review-content">
-        <p>{{ review.description }}</p>
-      </div>
+      <mat-card-content>
+        <!-- Star Rating Display -->
+        <div class="rating-display" *ngIf="review.rating">
+          <mat-icon *ngFor="let star of getStarArray(review.rating)" color="accent">star</mat-icon>
+          <mat-icon *ngFor="let star of getStarArray(5 - (review.rating || 0))" color="accent">star_border</mat-icon>
+          <span class="rating-value">{{ review.rating }}/5</span>
+        </div>
 
-      <div class="review-actions">
-        <a href="#" class="read-more-btn">
-          Read More
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </a>
-      </div>
-    </div>
+        <p class="review-description">{{ review.description }}</p>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button color="primary" class="read-more-btn" (click)="viewReviewDetails(review.id)">
+          <span>Read More</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && (!reviewList || reviewList.length === 0)">
+    <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+    <h3>No Reviews Found</h3>
+    <p>Be the first to share your experience!</p>
+    <button mat-raised-button color="primary" routerLink="/review-form">
+      <mat-icon>add</mat-icon> Add Review
+    </button>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="!isLoading && reviewList?.length > 0">
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageIndex]="currentPage"
+      (page)="onPageChange($event)"
+      aria-label="Select page of reviews">
+    </mat-paginator>
   </div>
 </div>

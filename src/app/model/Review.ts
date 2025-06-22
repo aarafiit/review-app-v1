@@ -1,5 +1,6 @@
 export interface Review {
   id?: string;
+  instituteId?: number
   instituteName?: string
   title?: string
   description?: string;
