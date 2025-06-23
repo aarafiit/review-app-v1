@@ -150,6 +150,14 @@ mat-card-subtitle {
 mat-card-actions {
   margin-top: auto;
   padding: 8px 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
 }
 
 .read-more-btn {
@@ -212,6 +220,68 @@ mat-card-actions {
   margin: 40px 0;
   display: flex;
   justify-content: center;
+}
+
+.custom-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.page-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.page-number:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.page-number.active {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.page-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-control:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.page-control.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.page-control.disabled:hover {
+  background-color: transparent;
+}
+
+.page-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-weight: 500;
 }
 
 /* Responsive Design */

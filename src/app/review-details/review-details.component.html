@@ -17,16 +17,20 @@
         <mat-icon>arrow_back</mat-icon> Back to Reviews
       </button>
       <div class="review-type-chip">
-        <mat-chip [color]="review.reviewType === 'Positive' ? 'primary' :
-                          review.reviewType === 'Mixed' ? 'accent' : 'warn'"
-                 [matTooltip]="review.reviewType + ' Review'"
-                 disableRipple>
-          <mat-icon *ngIf="review.reviewType === '1'">thumb_up</mat-icon>
-          <mat-icon *ngIf="review.reviewType === '2'">thumbs_up_down</mat-icon>
-          <mat-icon *ngIf="review.reviewType === '0'">thumb_down</mat-icon>
-          {{ review.reviewType }}
+        <mat-chip
+          [ngClass]="{
+            'positive-chip': review.reviewType === 1,
+            'negative-chip': review.reviewType === 0,
+            'mixed-chip': review.reviewType === 2
+          }"
+          disableRipple
+        >
+    <span class="chip-text fw-bold">
+      {{ review.reviewType === 1 ? 'Positive' : review.reviewType === 0 ? 'Negative' : 'Mixed' }}
+    </span>
         </mat-chip>
       </div>
+
     </div>
 
     <mat-card class="review-card">
@@ -53,6 +57,40 @@
         <div class="review-content mt-4" [innerHTML]="review.description"></div>
       </mat-card-content>
     </mat-card>
+
+    <!-- Comment Section -->
+    <div class="comment-section mt-4">
+      <h3>Comments</h3>
+
+      <!-- Comment Form -->
+      <mat-card class="comment-form-card">
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Add a comment</mat-label>
+            <textarea matInput [(ngModel)]="newComment" rows="4" placeholder="Share your thoughts..."></textarea>
+          </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-raised-button color="primary" [disabled]="!newComment.trim()" (click)="submitComment()">
+            Submit Comment
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Comments List -->
+      <div class="comments-list mt-4">
+        <mat-card *ngFor="let comment of comments" class="comment-card mb-3">
+          <mat-card-content>
+            <div class="comment-date">{{ comment.createdAt | date: 'MMM dd, yyyy' }}</div>
+            <div class="comment-content">{{ comment.content }}</div>
+          </mat-card-content>
+        </mat-card>
+
+        <div *ngIf="comments.length === 0" class="no-comments-message">
+          <p>No comments yet. Be the first to comment!</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Not Found Message -->

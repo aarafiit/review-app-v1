@@ -50,17 +50,18 @@
       </mat-card-header>
 
       <mat-card-content>
-        <!-- Star Rating Display -->
-        <div class="rating-display" *ngIf="review.rating">
-          <mat-icon *ngFor="let star of getStarArray(review.rating)" color="accent">star</mat-icon>
-          <mat-icon *ngFor="let star of getStarArray(5 - (review.rating || 0))" color="accent">star_border</mat-icon>
-          <span class="rating-value">{{ review.rating }}/5</span>
-        </div>
-
-        <p class="review-description">{{ review.description }}</p>
+        <div class="review-description" [innerHTML]="review.description | safeHtml"></div>
       </mat-card-content>
 
-      <mat-card-actions align="end">
+      <mat-card-actions>
+        <div class="action-buttons">
+          <button mat-icon-button color="primary" (click)="likeReview(review.id)" aria-label="Like this review">
+            <mat-icon>thumb_up</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="dislikeReview(review.id)" aria-label="Dislike this review">
+            <mat-icon>thumb_down</mat-icon>
+          </button>
+        </div>
         <button mat-button color="primary" class="read-more-btn" (click)="viewReviewDetails(review.id)">
           <span>Read More</span>
           <mat-icon>arrow_forward</mat-icon>
@@ -79,15 +80,23 @@
     </button>
   </div>
 
-  <!-- Pagination Controls -->
+  <!-- Custom Pagination Controls -->
   <div class="pagination-container" *ngIf="!isLoading && reviewList?.length > 0">
-    <mat-paginator
-      [length]="totalItems"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 25, 50]"
-      [pageIndex]="currentPage"
-      (page)="onPageChange($event)"
-      aria-label="Select page of reviews">
-    </mat-paginator>
+    <div class="custom-paginator">
+      <div class="page-control" [class.disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
+        <mat-icon>chevron_left</mat-icon>
+      </div>
+
+      <ng-container *ngFor="let page of getPaginationRange(); let i = index">
+        <div *ngIf="page !== '...'" class="page-number" [class.active]="page === currentPage" (click)="goToPage(page)">
+          {{ page + 1 }}
+        </div>
+        <div *ngIf="page === '...'" class="page-ellipsis">...</div>
+      </ng-container>
+
+      <div class="page-control" [class.disabled]="currentPage === getTotalPages() - 1" (click)="goToPage(currentPage + 1)">
+        <mat-icon>chevron_right</mat-icon>
+      </div>
+    </div>
   </div>
 </div>

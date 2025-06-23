@@ -5,6 +5,12 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environment/environment.development";
 import { Review } from '../../model/Review';
 
+export interface Comment {
+  id?: string;
+  content: string;
+  createdAt?: string;
+}
+
 @Injectable({
   providedIn: 'root' // This makes the service available application-wide
 })
@@ -41,6 +47,42 @@ export class ReviewService {
   submitReview(reviewData: any, page : number, size : number): Observable<any> {
     return this.http.post(`${this.apiUrl}/reviews`, reviewData).pipe(
       tap(() => this.getAllReviews(page,size))
+    );
+  }
+
+  likeReview(reviewId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/like`, {}).pipe(
+      catchError(error => {
+        console.error('Error liking review:', error);
+        return of({});
+      })
+    );
+  }
+
+  dislikeReview(reviewId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/dislike`, {}).pipe(
+      catchError(error => {
+        console.error('Error disliking review:', error);
+        return of({});
+      })
+    );
+  }
+
+  getComments(reviewId: string): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`${this.apiUrl}/reviews/${reviewId}/comment`).pipe(
+      catchError(error => {
+        console.error('Error fetching comments:', error);
+        return of([]);
+      })
+    );
+  }
+
+  submitComment(reviewId: string, content: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/comment`, { content }).pipe(
+      catchError(error => {
+        console.error('Error submitting comment:', error);
+        return of({});
+      })
     );
   }
 }

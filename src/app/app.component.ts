@@ -9,6 +9,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatIconModule} from "@angular/material/icon";
 import {NavBarComponent} from "./nav-bar/nav-bar.component";
+import {SafeHtmlPipe} from "./safe-html.pipe";
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ import {NavBarComponent} from "./nav-bar/nav-bar.component";
     NgbTypeahead,
     FormsModule,
     HttpClientModule,
-    MatButtonModule, MatDividerModule, MatIconModule, NavBarComponent
+    MatButtonModule, MatDividerModule, MatIconModule, NavBarComponent,
+    SafeHtmlPipe
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

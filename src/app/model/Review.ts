@@ -4,7 +4,7 @@ export interface Review {
   instituteName?: string
   title?: string
   description?: string;
-  reviewType?: string
+  reviewType?: number
   rating?: number;
   createdAt?: string;
   updatedAt?: string;
