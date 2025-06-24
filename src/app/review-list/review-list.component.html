@@ -7,7 +7,7 @@
         A platform where people share their experiences with University and Faculty.
       </p>
       <div class="hero-actions">
-        <button mat-raised-button color="primary" routerLink="/review-form">
+        <button mat-raised-button color="primary" routerLink="/share-story">
           <mat-icon>add</mat-icon> Share Your Experience
         </button>
       </div>
@@ -55,13 +55,21 @@
 
       <mat-card-actions>
         <div class="action-buttons">
-          <button mat-icon-button color="primary" (click)="likeReview(review.id)" aria-label="Like this review">
-            <mat-icon>thumb_up</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="dislikeReview(review.id)" aria-label="Dislike this review">
-            <mat-icon>thumb_down</mat-icon>
-          </button>
+          <div class="like-dislike-group">
+            <button mat-icon-button color="primary" (click)="likeReview(review.id)" aria-label="Like this review">
+              <mat-icon>thumb_up</mat-icon>
+            </button>
+            <span class="count-text">{{ review.likeCount || 0 }}</span>
+          </div>
+
+          <div class="like-dislike-group">
+            <button mat-icon-button color="warn" (click)="dislikeReview(review.id)" aria-label="Dislike this review">
+              <mat-icon>thumb_down</mat-icon>
+            </button>
+            <span class="count-text">{{ review.dislikeCount || 0 }}</span>
+          </div>
         </div>
+
         <button mat-button color="primary" class="read-more-btn" (click)="viewReviewDetails(review.id)">
           <span>Read More</span>
           <mat-icon>arrow_forward</mat-icon>
@@ -81,22 +89,61 @@
   </div>
 
   <!-- Custom Pagination Controls -->
-  <div class="pagination-container" *ngIf="!isLoading && reviewList?.length > 0">
-    <div class="custom-paginator">
-      <div class="page-control" [class.disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
-        <mat-icon>chevron_left</mat-icon>
-      </div>
+  <div class="pagination-container" *ngIf="!isLoading && reviewList?.length > 0 && getTotalPages() > 1">
+    <!-- Pagination Info -->
+    <div class="pagination-info">
+      {{ (currentPage * pageSize) + 1 }} - {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }}
+    </div>
 
-      <ng-container *ngFor="let page of getPaginationRange(); let i = index">
-        <div *ngIf="page !== '...'" class="page-number" [class.active]="page === currentPage" (click)="goToPage(page)">
-          {{ page + 1 }}
-        </div>
-        <div *ngIf="page === '...'" class="page-ellipsis">...</div>
+    <!-- Main Pagination Wrapper -->
+    <div class="pagination-wrapper">
+      <!-- Previous Button -->
+      <button
+        class="pagination-nav-btn"
+        [disabled]="currentPage === 0"
+        (click)="goToPage(currentPage - 1)"
+        title="Previous page">
+        ‹
+      </button>
+
+      <!-- Page Numbers -->
+      <ng-container *ngFor="let page of getPaginationRange()">
+        <!-- Regular Page Number -->
+        <button
+          *ngIf="page !== '...'"
+          class="pagination-btn"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)"
+          [title]="'Go to page ' + getPageNumber(page)">
+          {{ getPageNumber(page) }}
+        </button>
+
+        <!-- Ellipsis -->
+        <span *ngIf="page === '...'" class="pagination-ellipsis">...</span>
       </ng-container>
 
-      <div class="page-control" [class.disabled]="currentPage === getTotalPages() - 1" (click)="goToPage(currentPage + 1)">
-        <mat-icon>chevron_right</mat-icon>
-      </div>
+      <!-- Next Button -->
+      <button
+        class="pagination-nav-btn"
+        [disabled]="currentPage >= getTotalPages() - 1"
+        (click)="goToPage(currentPage + 1)"
+        title="Next page">
+        ›
+      </button>
+    </div>
+
+    <!-- Page Size Selector -->
+    <div class="page-size-selector">
+      <label for="pageSize">Show:</label>
+      <select
+        id="pageSize"
+        [value]="pageSize"
+        (change)="onPageSizeChange($event)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
     </div>
   </div>
 </div>

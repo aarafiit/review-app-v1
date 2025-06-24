@@ -35,6 +35,7 @@
                 [(ngModel)]="searchText"
                 name="search"
                 (keypress)="onSearchKeypress($event)"
+                (input)="onSearchInputChange()"
                 aria-label="Search"
               />
             </div>

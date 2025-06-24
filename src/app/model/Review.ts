@@ -6,6 +6,8 @@ export interface Review {
   description?: string;
   reviewType?: number
   rating?: number;
+  likeCount?: number;
+  dislikeCount?: number;
   createdAt?: string;
   updatedAt?: string;
   deleted?: boolean;

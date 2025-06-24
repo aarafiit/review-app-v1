@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
+import { ReviewService } from "../reviews/service/review.service";
 
 @Component({
   selector: 'app-nav-bar',
@@ -15,7 +16,10 @@ export class NavBarComponent implements OnInit {
   searchText = '';
   activeTab = 'home';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private reviewService: ReviewService
+  ) {}
 
   ngOnInit() {
     // Set active tab based on current route
@@ -35,16 +39,30 @@ export class NavBarComponent implements OnInit {
 
   onSearch() {
     if (this.searchText.trim()) {
-      // Navigate to search results page with query parameter
-      this.router.navigate(['/universities'], {
-        queryParams: { search: this.searchText.trim() }
-      });
+      // Navigate to home page if not already there
+      if (this.router.url !== '/' && this.router.url !== '/home') {
+        this.router.navigate(['/']);
+      }
+
+      // Trigger search in ReviewService with the search parameter
+      this.reviewService.searchReviews(this.searchText.trim(), 0, 10);
+    } else {
+      // If search is empty, load all reviews
+      this.reviewService.getAllReviews(0, 10);
     }
   }
 
   onSearchKeypress(event: any) {
     if (event.key === 'Enter') {
       this.onSearch();
+    }
+  }
+
+  // Clear search when user clears the input
+  onSearchInputChange() {
+    if (!this.searchText.trim()) {
+      // If search input is cleared, show all reviews
+      this.reviewService.getAllReviews(0, 10);
     }
   }
 

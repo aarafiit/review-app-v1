@@ -1,91 +1,150 @@
-<div class="container mt-5">
+<div class="review-details-container">
   <!-- Loading Indicator -->
-  <div class="text-center my-5" *ngIf="isLoading">
-    <mat-icon class="loading-icon">sync</mat-icon>
-    <p>Loading review details...</p>
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="loading-content">
+      <mat-icon class="loading-spinner">sync</mat-icon>
+      <p>Loading review details...</p>
+    </div>
   </div>
 
   <!-- Error Message -->
-  <div class="alert alert-danger" *ngIf="error">
-    <mat-icon>error</mat-icon> {{ error }}
+  <div class="error-alert" *ngIf="error && !isLoading">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
   </div>
 
-  <!-- Review Details -->
-  <div class="review-details" *ngIf="!isLoading && review">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <button mat-button color="primary" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon> Back to Reviews
+  <!-- Review Details Content -->
+  <div class="review-content" *ngIf="!isLoading && review && !error">
+
+    <!-- Header with Back Button and Review Type -->
+    <div class="review-header">
+      <button mat-button class="back-button" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to Reviews</span>
       </button>
-      <div class="review-type-chip">
-        <mat-chip
-          [ngClass]="{
-            'positive-chip': review.reviewType === 1,
-            'negative-chip': review.reviewType === 0,
-            'mixed-chip': review.reviewType === 2
-          }"
-          disableRipple
-        >
-    <span class="chip-text fw-bold">
-      {{ review.reviewType === 1 ? 'Positive' : review.reviewType === 0 ? 'Negative' : 'Mixed' }}
-    </span>
-        </mat-chip>
-      </div>
+
 
     </div>
 
-    <mat-card class="review-card">
+    <!-- Main Review Card -->
+    <mat-card class="main-review-card mt-5">
       <mat-card-header>
         <div mat-card-avatar class="institution-avatar">
           <mat-icon>school</mat-icon>
         </div>
         <mat-card-title>{{ review.title }}</mat-card-title>
         <mat-card-subtitle>
-          {{ review.instituteName }}
-          <span class="date-info">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
+          <div class="subtitle-content">
+            <span class="institution-name">{{ review.instituteName }}</span>
+            <span class="review-date">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
+          </div>
         </mat-card-subtitle>
+        <div class="review-type-badge">
+          <mat-chip
+            [ngClass]="{
+            'positive-chip': review.reviewType === 1,
+            'negative-chip': review.reviewType === 0,
+            'mixed-chip': review.reviewType === 2
+          }"
+            disableRipple>
+          <span class="chip-text fw-bold">
+            {{ review.reviewType === 1 ? 'Positive' : review.reviewType === 0 ? 'Negative' : 'Mixed' }}
+          </span>
+          </mat-chip>
+        </div>
       </mat-card-header>
 
       <mat-card-content>
         <!-- Star Rating Display -->
-        <div class="rating-display" *ngIf="review.rating">
-          <mat-icon *ngFor="let star of getStarArray(review.rating)" color="accent">star</mat-icon>
-          <mat-icon *ngFor="let star of getStarArray(5 - (review.rating || 0))" color="accent">star_border</mat-icon>
-          <span class="rating-value">{{ review.rating }}/5</span>
+        <div class="rating-section" *ngIf="review.rating">
+          <div class="star-rating">
+            <mat-icon *ngFor="let star of getStarArray(review.rating)" class="star filled">star</mat-icon>
+            <mat-icon *ngFor="let star of getStarArray(5 - (review.rating || 0))" class="star empty">star_border</mat-icon>
+          </div>
+          <span class="rating-text">{{ review.rating }}/5</span>
         </div>
 
-        <!-- Full Review Content -->
-        <div class="review-content mt-4" [innerHTML]="review.description"></div>
+        <!-- Review Description -->
+        <div class="review-description" [innerHTML]="review.description"></div>
       </mat-card-content>
     </mat-card>
 
-    <!-- Comment Section -->
-    <div class="comment-section mt-4">
-      <h3>Comments</h3>
+    <!-- Comments Section -->
+    <div class="comments-section mt-4">
+      <h3 class="section-title">
+        <mat-icon>comment</mat-icon>
+        <span>Comments</span>
+        <span class="comment-count" *ngIf="totalComments > 0">({{ totalComments }})</span>
+      </h3>
 
-      <!-- Comment Form -->
-      <mat-card class="comment-form-card">
+      <!-- Add Comment Form -->
+      <mat-card class="add-comment-card">
+        <mat-card-header>
+          <mat-card-title class="form-title">Add a Comment</mat-card-title>
+        </mat-card-header>
+
         <mat-card-content>
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Add a comment</mat-label>
-            <textarea matInput [(ngModel)]="newComment" rows="4" placeholder="Share your thoughts..."></textarea>
-          </mat-form-field>
+          <form #commentForm="ngForm" (ngSubmit)="submitComment()">
+            <mat-form-field appearance="outline" class="comment-input">
+              <mat-label>Share your thoughts...</mat-label>
+              <textarea
+                matInput
+                [(ngModel)]="newComment"
+                name="comment"
+                rows="4"
+                placeholder="Write your comment here..."
+                maxlength="500"
+                >
+              </textarea>
+              <mat-hint align="end">{{ newComment?.length || 0 }}/500</mat-hint>
+            </mat-form-field>
+          </form>
         </mat-card-content>
+
         <mat-card-actions align="end">
-          <button mat-raised-button color="primary" [disabled]="!newComment.trim()" (click)="submitComment()">
-            Submit Comment
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!newComment?.trim() || isSubmittingComment"
+            (click)="submitComment()"
+            class="submit-button">
+            <mat-icon *ngIf="isSubmittingComment" class="loading-icon">sync</mat-icon>
+            <mat-icon *ngIf="!isSubmittingComment">send</mat-icon>
+            <span>{{ isSubmittingComment ? 'Submitting...' : 'Submit Comment' }}</span>
           </button>
         </mat-card-actions>
+
+        <!-- Comment Error -->
+        <div class="comment-error" *ngIf="commentError">
+          <mat-icon>error</mat-icon>
+          <span>{{ commentError }}</span>
+        </div>
       </mat-card>
 
+      <!-- Comments Loading -->
+      <div class="comments-loading" *ngIf="isLoadingComments">
+        <mat-icon class="loading-spinner">sync</mat-icon>
+        <span>Loading comments...</span>
+      </div>
+
       <!-- Comments List -->
-      <div class="comments-list mt-4">
-        <mat-card *ngFor="let comment of comments" class="comment-card mb-3">
+      <div class="comments-list" *ngIf="!isLoadingComments">
+        <mat-card *ngFor="let comment of comments; trackBy: trackByCommentId" class="comment-card">
           <mat-card-content>
-            <div class="comment-date">{{ comment.createdAt | date: 'MMM dd, yyyy' }}</div>
-            <div class="comment-content">{{ comment.content }}</div>
+            <div class="comment-header">
+              <div class="comment-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div class="comment-meta">
+                <span class="comment-author">Anonymous </span>
+                <span class="comment-date">{{ comment.createdAt | date: 'MMM dd, yyyy • h:mm a' }}</span>
+              </div>
+            </div>
+            <div class="comment-text">{{ comment.comment }}</div>
           </mat-card-content>
         </mat-card>
 
+        <!-- Empty Comments State -->
         <div *ngIf="comments.length === 0" class="no-comments-message">
           <p>No comments yet. Be the first to comment!</p>
         </div>
@@ -93,13 +152,16 @@
     </div>
   </div>
 
-  <!-- Not Found Message -->
-  <div class="text-center my-5" *ngIf="!isLoading && !review && !error">
-    <mat-icon class="not-found-icon">sentiment_dissatisfied</mat-icon>
-    <h3>Review Not Found</h3>
-    <p>The review you're looking for doesn't exist or has been removed.</p>
-    <button mat-raised-button color="primary" (click)="goBack()">
-      Back to Reviews
-    </button>
+  <!-- Not Found State -->
+  <div class="not-found-state" *ngIf="!isLoading && !review && !error">
+    <div class="not-found-content">
+      <mat-icon class="not-found-icon">sentiment_dissatisfied</mat-icon>
+      <h2>Review Not Found</h2>
+      <p>The review you're looking for doesn't exist or has been removed.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to Reviews</span>
+      </button>
+    </div>
   </div>
 </div>

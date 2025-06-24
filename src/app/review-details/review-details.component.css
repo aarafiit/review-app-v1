@@ -1,8 +1,9 @@
 /* Review Details Component Styles */
 
-.container {
-  max-width: 800px;
+.review-details-container {
+  max-width: 700px; /* Decreased from 800px */
   margin: 0 auto;
+  padding: 20px;
 }
 
 .loading-icon, .not-found-icon {
@@ -27,6 +28,15 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
+  position: relative; /* For positioning the chip */
+}
+
+/* Review type chip positioned inside card header at top-right */
+.review-type-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
 }
 
 .review-content {
@@ -72,16 +82,31 @@
   font-weight: 500;
 }
 
+/* Ensure card header content doesn't overlap with chip */
+mat-card-header {
+  padding-right: 120px !important; /* Add space for the chip on the right */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .container {
+  .review-details-container {
     padding: 0 16px;
+    max-width: 100%; /* Allow full width on mobile */
   }
 
   .review-card {
     margin: 0 -8px 16px;
   }
+
+  /* Maintain comment spacing on mobile */
+  .comment-card {
+    margin-left: -8px;
+    margin-right: -8px;
+    margin-bottom: 20px; /* Keep increased spacing */
+    border-radius: 4px;
+  }
 }
+
 mat-chip.positive-chip,
 mat-chip.negative-chip,
 mat-chip.mixed-chip {
@@ -89,10 +114,10 @@ mat-chip.mixed-chip {
   background-clip: padding-box;
   font-weight: bold;
   font-size: 13px;
-  height: 28px;                   /* Consistent height */
+  height: 28px;
   line-height: 28px;
-  padding: 0 10px;                /* Tighter side padding */
-  min-width: auto;               /* Optional: content-based width */
+  padding: 0 10px;
+  min-width: auto;
   border-radius: 14px;
   display: inline-flex;
   align-items: center;
@@ -117,8 +142,6 @@ mat-chip.mixed-chip {
   background-color: #FFF3CD !important; /* Soft yellow */
   color: #8A6D3B;
 }
-
-
 
 .chip-text {
   text-align: center;
@@ -147,6 +170,17 @@ mat-chip.mixed-chip {
   width: 100%;
 }
 
+/* Increased comment box size */
+.comment-input {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.comment-input textarea {
+  min-height: 100px !important; /* Increased from 120px */
+  resize: vertical;
+}
+
 .comments-list {
   margin-top: 24px;
 }
@@ -154,7 +188,7 @@ mat-chip.mixed-chip {
 .comment-card {
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  margin-bottom: 16px;
+  margin-bottom: 20px; /* Increased from 16px to add more space */
   padding: 16px;
 }
 
@@ -189,10 +223,14 @@ mat-chip.mixed-chip {
 
 /* Mobile Responsiveness for Comments */
 @media (max-width: 768px) {
-  .comment-form-card,
-  .comment-card {
+  .comment-form-card {
     margin-left: -8px;
     margin-right: -8px;
     border-radius: 4px;
+  }
+
+  /* Ensure comment box remains large on mobile */
+  .comment-input textarea {
+    min-height: 120px !important; /* Slightly smaller on mobile but still increased */
   }
 }

@@ -1,38 +1,65 @@
 import { Injectable } from '@angular/core';
-
-import {BehaviorSubject, Observable, tap, catchError, of} from 'rxjs';
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {environment} from "../../../environment/environment.development";
+import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { environment } from "../../../environment/environment.development";
 import { Review } from '../../model/Review';
-
-export interface Comment {
-  id?: string;
-  content: string;
-  createdAt?: string;
-}
+import { Comment } from "../../model/comment.model";
 
 @Injectable({
-  providedIn: 'root' // This makes the service available application-wide
+  providedIn: 'root'
 })
 export class ReviewService {
   private apiUrl = environment.apiUrl;
-  private reviewsSubject = new BehaviorSubject<any>([]);
+  private reviewsSubject = new BehaviorSubject<any>(null);
   public reviews$ = this.reviewsSubject.asObservable();
 
+  // Add a subject to track current search term
+  private currentSearchSubject = new BehaviorSubject<string>('');
+  public currentSearch$ = this.currentSearchSubject.asObservable();
+
   constructor(private http: HttpClient) {
-    this.getAllReviews(0,10);
+    this.getAllReviews(0, 10);
   }
 
-   getAllReviews(page : number, size : number) {
-
-    const params = new HttpParams()
+  getAllReviews(page: number, size: number, searchText?: string) {
+    let params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size.toString())
+      .set('size', size.toString());
 
-    this.http.get<any>(`${this.apiUrl}/reviews`,{params}).subscribe({
-      next: (reviews) => this.reviewsSubject.next(reviews),
-      error: (err) => console.error('Error loading reviews:', err)
+    if (searchText && searchText.trim()) {
+      params = params.set('searchParam', searchText.trim());
+    }
+
+    this.http.get<any>(`${this.apiUrl}/reviews`, { params }).subscribe({
+      next: (reviews) => {
+        this.reviewsSubject.next(reviews);
+        // Update current search term
+        this.currentSearchSubject.next(searchText || '');
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
+        // On error, emit empty result but keep the search term
+        this.reviewsSubject.next({
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          number: page,
+          size: size
+        });
+      }
     });
+  }
+
+  // New method specifically for search
+  searchReviews(searchParam: string, page: number = 0, size: number = 10) {
+    console.log('Searching reviews with param:', searchParam);
+    this.getAllReviews(page, size, searchParam);
+  }
+
+  // Method to clear search and get all reviews
+  clearSearch(page: number = 0, size: number = 10) {
+    console.log('Clearing search, loading all reviews');
+    this.getAllReviews(page, size);
   }
 
   getReviewById(id: string): Observable<Review> {
@@ -44,9 +71,13 @@ export class ReviewService {
     );
   }
 
-  submitReview(reviewData: any, page : number, size : number): Observable<any> {
+  submitReview(reviewData: any, page: number, size: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/reviews`, reviewData).pipe(
-      tap(() => this.getAllReviews(page,size))
+      tap(() => {
+        // After submitting, reload with current search if any
+        const currentSearch = this.currentSearchSubject.value;
+        this.getAllReviews(page, size, currentSearch);
+      })
     );
   }
 
@@ -68,21 +99,24 @@ export class ReviewService {
     );
   }
 
-  getComments(reviewId: string): Observable<Comment[]> {
-    return this.http.get<Comment[]>(`${this.apiUrl}/reviews/${reviewId}/comment`).pipe(
+  getComments(reviewId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/reviews/${reviewId}/comment`).pipe(
       catchError(error => {
         console.error('Error fetching comments:', error);
-        return of([]);
+        return of({
+          content: [],
+          totalPages: 0,
+          totalElements: 0,
+          number: 0,
+          size: 0,
+          first: true,
+          last: true
+        });
       })
     );
   }
 
-  submitComment(reviewId: string, content: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/comment`, { content }).pipe(
-      catchError(error => {
-        console.error('Error submitting comment:', error);
-        return of({});
-      })
-    );
+  submitComment(reviewId: string, comment: Comment): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/comment`, comment);
   }
 }
