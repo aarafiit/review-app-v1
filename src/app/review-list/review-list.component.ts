@@ -1,20 +1,21 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {CommonModule, DatePipe} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { Observable, Subject, catchError, of, takeUntil, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
-import { MatPaginator, PageEvent, MatPaginatorModule } from "@angular/material/paginator";
-import { Review } from "../model/Review";
-import { ReviewService } from "../reviews/service/review.service";
-import { Router, RouterModule } from "@angular/router";
-import { SearchableInputComponent } from "../searchable-input/searchable-input.component";
-import { MatButtonModule } from "@angular/material/button";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatIconModule } from "@angular/material/icon";
-import { MatCardModule } from "@angular/material/card";
-import { MatChipsModule } from "@angular/material/chips";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { SafeHtmlPipe } from "../safe-html.pipe";
+// import { ReviewsService, ReviewFilters } from './reviews.service';
+import {MatPaginator, PageEvent, MatPaginatorModule} from "@angular/material/paginator";
+import {Review} from "../model/Review";
+import {ReviewService} from "../reviews/service/review.service";
+import {Router, RouterModule} from "@angular/router";
+import {SearchableInputComponent} from "../searchable-input/searchable-input.component";
+import {MatButtonModule} from "@angular/material/button";
+import {MatDividerModule} from "@angular/material/divider";
+import {MatIconModule} from "@angular/material/icon";
+import {MatCardModule} from "@angular/material/card";
+import {MatChipsModule} from "@angular/material/chips";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {SafeHtmlPipe} from "../safe-html.pipe";
 
 @Component({
   selector: 'app-review-list',
@@ -45,19 +46,27 @@ export class ReviewListComponent implements OnInit, OnDestroy {
   pageSize = 10;
   currentPage = 0;
   isLoading = false;
-  currentSearchTerm = '';
+  isPageChanging = false; // New loading state for pagination
+  isSearching = false; // New loading state for search
+  isNavbarSearching = false; // Loading state for navbar search
+  searchText = ''; // Track search text
   private subscription = new Subscription();
 
   constructor(
     private reviewService: ReviewService,
     private router: Router
-  ) {}
-
+  ) {
+  }
   reviews: Review[] = [];
 
   ngOnInit() {
     this.loadReviews();
-    this.subscribeToSearch();
+
+    // Subscribe to navbar search loading state
+    const searchLoadingSub = this.reviewService.searchLoading$.subscribe(loading => {
+      this.isNavbarSearching = loading;
+    });
+    this.subscription.add(searchLoadingSub);
   }
 
   ngOnDestroy() {
@@ -69,46 +78,44 @@ export class ReviewListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const reviewsSub = this.reviewService.reviews$.subscribe(response => {
       if (response) {
-        console.log('Reviews updated:', response.content);
+        console.log(response.content);
         this.reviewList = response.content;
         this.totalItems = response.totalElements;
         this.pageSize = response.size;
         this.currentPage = response.number;
+
+        // Turn off all loading states
         this.isLoading = false;
+        this.isPageChanging = false;
+        this.isSearching = false;
+        this.isNavbarSearching = false;
       }
     });
     this.subscription.add(reviewsSub);
   }
 
-  // Subscribe to search changes from navbar
-  subscribeToSearch() {
-    const searchSub = this.reviewService.currentSearch$.subscribe(searchTerm => {
-      this.currentSearchTerm = searchTerm;
-      console.log('Current search term:', searchTerm);
-    });
-    this.subscription.add(searchSub);
+  onPageChange(event: PageEvent) {
+    this.isPageChanging = true; // Show page change loading
+
+    // Add artificial delay for better UX
+    setTimeout(() => {
+      this.reviewService.getAllReviews(event.pageIndex, event.pageSize);
+    }, 800); // 800ms delay for page switching
   }
 
-  onPageChange(event: PageEvent) {
-    this.isLoading = true;
-    // Use current search term when changing pages
-    if (this.currentSearchTerm) {
-      this.reviewService.searchReviews(this.currentSearchTerm, event.pageIndex, event.pageSize);
-    } else {
-      this.reviewService.getAllReviews(event.pageIndex, event.pageSize);
-    }
+  // Fix for pagination visibility - always show if there's data
+  shouldShowPagination(): boolean {
+    return this.totalItems > 0;
   }
 
   goToPage(page: number | string) {
-    // Ensure page is a number before proceeding
     if (typeof page === 'number' && page >= 0 && page < this.getTotalPages() && page !== this.currentPage) {
-      this.isLoading = true;
-      // Use current search term when navigating pages
-      if (this.currentSearchTerm) {
-        this.reviewService.searchReviews(this.currentSearchTerm, page, this.pageSize);
-      } else {
+      this.isPageChanging = true;
+
+      // Add artificial delay for page navigation
+      setTimeout(() => {
         this.reviewService.getAllReviews(page, this.pageSize);
-      }
+      }, 800); // 800ms delay
     }
   }
 
@@ -173,12 +180,8 @@ export class ReviewListComponent implements OnInit, OnDestroy {
       this.reviewService.likeReview(reviewId).subscribe({
         next: () => {
           console.log('Review liked successfully');
-          // Refresh with current search context
-          if (this.currentSearchTerm) {
-            this.reviewService.searchReviews(this.currentSearchTerm, this.currentPage, this.pageSize);
-          } else {
-            this.reviewService.getAllReviews(this.currentPage, this.pageSize);
-          }
+          // Optionally refresh the reviews list
+          this.reviewService.getAllReviews(this.currentPage, this.pageSize);
         },
         error: (err) => console.error('Error liking review:', err)
       });
@@ -190,54 +193,59 @@ export class ReviewListComponent implements OnInit, OnDestroy {
       this.reviewService.dislikeReview(reviewId).subscribe({
         next: () => {
           console.log('Review disliked successfully');
-          // Refresh with current search context
-          if (this.currentSearchTerm) {
-            this.reviewService.searchReviews(this.currentSearchTerm, this.currentPage, this.pageSize);
-          } else {
-            this.reviewService.getAllReviews(this.currentPage, this.pageSize);
-          }
+          // Optionally refresh the reviews list
+          this.reviewService.getAllReviews(this.currentPage, this.pageSize);
         },
         error: (err) => console.error('Error disliking review:', err)
       });
     }
   }
 
-  // Helper method to check if we're currently searching
-  get isSearching(): boolean {
-    return !!this.currentSearchTerm;
+  // Helper method to get page number for display (1-based)
+  getPageNumber(page: number | string): number {
+    return typeof page === 'number' ? page + 1 : 1;
   }
 
-  // Helper method to get search result message
-  get searchResultMessage(): string {
-    if (this.isSearching) {
-      const resultCount = this.totalItems;
-      return `Found ${resultCount} result${resultCount !== 1 ? 's' : ''} for "${this.currentSearchTerm}"`;
-    }
-    return '';
-  }
-
-  // Page size change handler
+  // Handle page size change
   onPageSizeChange(event: any): void {
     const newPageSize = parseInt(event.target.value);
     this.pageSize = newPageSize;
     this.currentPage = 0; // Reset to first page
+    this.isPageChanging = true;
 
-    this.isLoading = true;
-    if (this.currentSearchTerm) {
-      this.reviewService.searchReviews(this.currentSearchTerm, 0, newPageSize);
-    } else {
+    // Add delay for page size change
+    setTimeout(() => {
       this.reviewService.getAllReviews(0, newPageSize);
-    }
+    }, 800);
   }
 
-  // Helper method to safely get page number for display
-  getPageNumber(page: number | string): number {
-    if (typeof page === 'number') {
-      return page + 1;
-    }
-    return 1; // Fallback, though this should never happen for non-ellipsis pages
+  // Search functionality
+  onSearch(searchText: string): void {
+    this.searchText = searchText;
+    this.isSearching = true;
+    this.currentPage = 0; // Reset to first page for search
+
+    // Add delay for search
+    setTimeout(() => {
+      this.reviewService.getAllReviews(0, this.pageSize, searchText);
+    }, 1000); // Longer delay for search (1000ms)
   }
 
-  // Expose Math for template
-  Math = Math;
+  // Clear search
+  clearSearch(): void {
+    this.searchText = '';
+    this.isSearching = true;
+
+    setTimeout(() => {
+      this.reviewService.getAllReviews(0, this.pageSize);
+    }, 500);
+  }
+
+  // Check if any loading state is active
+  get isAnyLoading(): boolean {
+    return this.isLoading || this.isPageChanging || this.isSearching || this.isNavbarSearching;
+  }
+
+  // Math utility for template
+  protected readonly Math = Math;
 }

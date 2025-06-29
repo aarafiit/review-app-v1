@@ -1,24 +1,24 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { environment } from "../../../environment/environment.development";
+import {BehaviorSubject, Observable, tap, catchError, of} from 'rxjs';
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {environment} from "../../../environment/environment.development";
 import { Review } from '../../model/Review';
-import { Comment } from "../../model/comment.model";
+import {Comment} from "../../model/comment.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // This makes the service available application-wide
 })
 export class ReviewService {
   private apiUrl = environment.apiUrl;
-  private reviewsSubject = new BehaviorSubject<any>(null);
+  private reviewsSubject = new BehaviorSubject<any>([]);
   public reviews$ = this.reviewsSubject.asObservable();
 
-  // Add a subject to track current search term
-  private currentSearchSubject = new BehaviorSubject<string>('');
-  public currentSearch$ = this.currentSearchSubject.asObservable();
+  // Add search loading state
+  private searchLoadingSubject = new BehaviorSubject<boolean>(false);
+  public searchLoading$ = this.searchLoadingSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.getAllReviews(0, 10);
+    this.getAllReviews(0,10);
   }
 
   getAllReviews(page: number, size: number, searchText?: string) {
@@ -31,35 +31,21 @@ export class ReviewService {
     }
 
     this.http.get<any>(`${this.apiUrl}/reviews`, { params }).subscribe({
-      next: (reviews) => {
-        this.reviewsSubject.next(reviews);
-        // Update current search term
-        this.currentSearchSubject.next(searchText || '');
-      },
-      error: (err) => {
-        console.error('Error loading reviews:', err);
-        // On error, emit empty result but keep the search term
-        this.reviewsSubject.next({
-          content: [],
-          totalElements: 0,
-          totalPages: 0,
-          number: page,
-          size: size
-        });
-      }
+      next: (reviews) => this.reviewsSubject.next(reviews),
+      error: (err) => console.error('Error loading reviews:', err)
     });
   }
 
-  // New method specifically for search
-  searchReviews(searchParam: string, page: number = 0, size: number = 10) {
-    console.log('Searching reviews with param:', searchParam);
-    this.getAllReviews(page, size, searchParam);
-  }
+  // New method specifically for nav-bar search
+  searchReviews(searchText: string) {
+    // Set search loading state
+    this.searchLoadingSubject.next(true);
 
-  // Method to clear search and get all reviews
-  clearSearch(page: number = 0, size: number = 10) {
-    console.log('Clearing search, loading all reviews');
-    this.getAllReviews(page, size);
+    // Add artificial delay for search
+    setTimeout(() => {
+      this.getAllReviews(0, 10, searchText);
+      this.searchLoadingSubject.next(false);
+    }, 1000); // 1000ms delay for search
   }
 
   getReviewById(id: string): Observable<Review> {
@@ -71,13 +57,9 @@ export class ReviewService {
     );
   }
 
-  submitReview(reviewData: any, page: number, size: number): Observable<any> {
+  submitReview(reviewData: any, page : number, size : number): Observable<any> {
     return this.http.post(`${this.apiUrl}/reviews`, reviewData).pipe(
-      tap(() => {
-        // After submitting, reload with current search if any
-        const currentSearch = this.currentSearchSubject.value;
-        this.getAllReviews(page, size, currentSearch);
-      })
+      tap(() => this.getAllReviews(page,size))
     );
   }
 
@@ -103,6 +85,7 @@ export class ReviewService {
     return this.http.get<any>(`${this.apiUrl}/reviews/${reviewId}/comment`).pipe(
       catchError(error => {
         console.error('Error fetching comments:', error);
+        // Fallback to a default paginated object
         return of({
           content: [],
           totalPages: 0,

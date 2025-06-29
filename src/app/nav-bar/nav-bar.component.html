@@ -34,8 +34,8 @@
                 placeholder="Search universities..."
                 [(ngModel)]="searchText"
                 name="search"
+                (input)="onSearchInput()"
                 (keypress)="onSearchKeypress($event)"
-                (input)="onSearchInputChange()"
                 aria-label="Search"
               />
             </div>

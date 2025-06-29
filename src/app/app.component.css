@@ -1,15 +1,18 @@
 /* Main Container */
 .main-container {
-  min-height: calc(100vh - 64px - 300px); /* Adjust based on header and footer height */
+  min-height: calc(100vh - 64px - 120px); /* Reduced footer height calculation */
   padding: 20px 0;
 }
 
-/* Footer Styles */
+/* Footer Styles - Reduced Height with Centered Content */
 .app-footer {
   background-color: #3f51b5;
   color: white;
-  padding: 40px 0 20px;
-  margin-top: 40px;
+  padding: 20px 0; /* Equal padding top and bottom for centering */
+  margin-top: 30px;
+  display: flex; /* Use flexbox for vertical centering */
+  align-items: center; /* Center content vertically */
+  min-height: 80px; /* Set minimum height for consistent centering */
 }
 
 .footer-container {
@@ -19,30 +22,33 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center; /* Center items vertically within container */
+  width: 100%;
 }
 
 .footer-section {
   flex: 1;
   min-width: 250px;
-  margin-bottom: 30px;
+  margin-bottom: 0; /* Remove bottom margin since we're centering */
   padding: 0 15px;
+  text-align: center; /* Center text within each section */
 }
 
 .footer-title {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
+  font-size: 1.4rem; /* Slightly reduced from 1.5rem */
+  margin-bottom: 12px; /* Reduced from 15px */
   font-weight: 500;
 }
 
 .footer-description {
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.4; /* Reduced from 1.5 */
   opacity: 0.8;
 }
 
 .footer-subtitle {
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+  font-size: 1rem; /* Reduced from 1.1rem */
+  margin-bottom: 12px; /* Reduced from 15px */
   font-weight: 500;
 }
 
@@ -53,7 +59,7 @@
 }
 
 .footer-links li {
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Reduced from 10px */
 }
 
 .footer-links a {
@@ -70,7 +76,7 @@
 
 .social-links {
   display: flex;
-  gap: 15px;
+  gap: 12px; /* Reduced from 15px */
 }
 
 .social-link {
@@ -85,36 +91,52 @@
 
 .footer-bottom {
   text-align: center;
-  padding-top: 20px;
-  margin-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0; /* Remove padding since content is centered */
+  margin: 0; /* Remove margin since content is centered */
+  border-top: none; /* Remove border since it's a simple single line */
   font-size: 0.8rem;
   opacity: 0.7;
+  width: 100%; /* Take full width for centering */
 }
 
 /* Responsive Footer */
 @media (max-width: 768px) {
+  .app-footer {
+    min-height: 60px; /* Smaller minimum height on mobile */
+    align-items: center; /* Maintain center alignment */
+  }
+
   .footer-container {
     flex-direction: column;
+    text-align: center; /* Center all content on mobile */
+    gap: 0; /* Remove gaps between sections */
   }
 
   .footer-section {
-    margin-bottom: 25px;
+    margin-bottom: 0;
     padding: 0;
-  }
-
-  .app-footer {
-    padding: 30px 20px 15px;
+    width: 100%;
   }
 }
 
 /* For very small screens */
 @media (max-width: 480px) {
   .footer-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+    margin-bottom: 8px; /* Reduced margin */
   }
 
   .footer-subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 8px; /* Reduced margin */
+  }
+
+  .app-footer {
+    min-height: 50px; /* Even smaller on very small screens */
+    padding: 15px 20px; /* Simplified padding */
+  }
+
+  .footer-container {
+    gap: 0;
   }
 }

@@ -20,16 +20,33 @@
     <p>Loading reviews...</p>
   </div>
 
+  <!-- Page Changing Loading -->
+  <div class="loading-container" *ngIf="isPageChanging && !isLoading">
+    <mat-icon class="loading-icon">cached</mat-icon>
+    <p>Switching page...</p>
+  </div>
+
+  <!-- Navbar Search Loading -->
+  <div class="loading-container" *ngIf="isNavbarSearching && !isLoading && !isPageChanging && !isSearching">
+    <mat-icon class="loading-icon">search</mat-icon>
+    <p>Searching reviews...</p>
+  </div>
+
+  <!-- Search Loading -->
+  <div class="loading-container" *ngIf="isSearching && !isLoading && !isPageChanging && !isNavbarSearching">
+    <mat-icon class="loading-icon">search</mat-icon>
+    <p>Searching reviews...</p>
+  </div>
+
   <!-- Reviews List with Enhanced UI -->
-  <div class="reviews-grid" *ngIf="!isLoading && reviewList?.length > 0">
+  <div class="reviews-grid" *ngIf="!isAnyLoading && reviewList?.length > 0">
     <mat-card class="review-card" *ngFor="let review of reviewList">
       <mat-card-header>
         <div mat-card-avatar class="institution-avatar">
           <mat-icon>school</mat-icon>
         </div>
-        <mat-card-title>{{ review.title }}</mat-card-title>
+        <mat-card-title>{{ review.instituteName }}</mat-card-title>
         <mat-card-subtitle>
-          {{ review.instituteName }}
           <span class="date-info">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
         </mat-card-subtitle>
         <div class="review-type-chip">
@@ -50,6 +67,7 @@
       </mat-card-header>
 
       <mat-card-content>
+        <mat-card-title>{{ review.title }}</mat-card-title>
         <div class="review-description" [innerHTML]="review.description | safeHtml"></div>
       </mat-card-content>
 
@@ -79,17 +97,17 @@
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading && (!reviewList || reviewList.length === 0)">
+  <div class="empty-state" *ngIf="!isAnyLoading && (!reviewList || reviewList.length === 0)">
     <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
     <h3>No Reviews Found</h3>
     <p>Be the first to share your experience!</p>
-    <button mat-raised-button color="primary" routerLink="/review-form">
+    <button mat-raised-button color="primary" routerLink="/share-story">
       <mat-icon>add</mat-icon> Add Review
     </button>
   </div>
 
   <!-- Custom Pagination Controls -->
-  <div class="pagination-container" *ngIf="!isLoading && reviewList?.length > 0 && getTotalPages() > 1">
+  <div class="pagination-container" *ngIf="!isAnyLoading && reviewList?.length > 0 && getTotalPages() > 1">
     <!-- Pagination Info -->
     <div class="pagination-info">
       {{ (currentPage * pageSize) + 1 }} - {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }}

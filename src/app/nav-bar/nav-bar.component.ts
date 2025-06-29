@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
-import { ReviewService } from "../reviews/service/review.service";
+import {ReviewService} from "../reviews/service/review.service";
 
 @Component({
   selector: 'app-nav-bar',
@@ -16,10 +16,8 @@ export class NavBarComponent implements OnInit {
   searchText = '';
   activeTab = 'home';
 
-  constructor(
-    private router: Router,
-    private reviewService: ReviewService
-  ) {}
+  constructor(private router: Router,
+              private reviewService: ReviewService) {}
 
   ngOnInit() {
     // Set active tab based on current route
@@ -39,30 +37,32 @@ export class NavBarComponent implements OnInit {
 
   onSearch() {
     if (this.searchText.trim()) {
-      // Navigate to home page if not already there
-      if (this.router.url !== '/' && this.router.url !== '/home') {
-        this.router.navigate(['/']);
-      }
+      // Navigate to universities page first
+      this.router.navigate(['/universities'], {
+        queryParams: { search: this.searchText.trim() }
+      });
 
-      // Trigger search in ReviewService with the search parameter
-      this.reviewService.searchReviews(this.searchText.trim(), 0, 10);
+      // Trigger search in review service which will show loading in review-list
+      this.reviewService.searchReviews(this.searchText.trim());
     } else {
-      // If search is empty, load all reviews
-      this.reviewService.getAllReviews(0, 10);
+      // If search text is empty, reload the page with all reviews
+      this.router.navigate(['/universities']);
+      this.reviewService.searchReviews(''); // This will load all reviews
+    }
+  }
+
+  // Add method to handle search input changes
+  onSearchInput() {
+    // If user clears the search box, automatically reload
+    if (this.searchText.trim() === '') {
+      this.router.navigate(['/universities']);
+      this.reviewService.searchReviews(''); // Load all reviews
     }
   }
 
   onSearchKeypress(event: any) {
     if (event.key === 'Enter') {
       this.onSearch();
-    }
-  }
-
-  // Clear search when user clears the input
-  onSearchInputChange() {
-    if (!this.searchText.trim()) {
-      // If search input is cleared, show all reviews
-      this.reviewService.getAllReviews(0, 10);
     }
   }
 

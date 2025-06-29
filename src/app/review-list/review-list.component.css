@@ -43,36 +43,13 @@
   transform: translateY(-2px);
 }
 
-/* Search Results */
-.search-results-header {
-  background: #f8f9fa;
-  padding: 20px 0;
-  text-align: center;
-  margin-bottom: 30px;
-  border-radius: 10px;
-}
-
-.search-results-header h2 {
-  color: #6a11cb;
-  margin-bottom: 8px;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.search-results-header p {
-  color: #6c757d;
-  margin: 0;
-  font-size: 1rem;
-}
-
-/* Container */
+/* Container & Grid */
 .reviews-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Grid */
 .reviews-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -88,11 +65,18 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .review-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+mat-card-header {
+  position: relative;
+  padding-right: 100px;
 }
 
 .institution-avatar {
@@ -107,10 +91,15 @@
 }
 
 mat-card-title {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+  margin-top: 8px;
   line-height: 1.4;
+  margin-right: 90px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 mat-card-subtitle {
@@ -122,13 +111,15 @@ mat-card-subtitle {
 .date-info {
   font-size: 12px;
   opacity: 0.7;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .review-type-chip {
   position: absolute;
   top: 12px;
   right: 12px;
+  z-index: 10;
+  max-width: 90px;
 }
 
 /* Chips */
@@ -148,39 +139,36 @@ mat-chip.mixed-chip {
 
 mat-chip.positive-chip {
   background-color: #C3E6CD !important;
-  color: #51d558;
+  color: #51d558 !important;
+}
+
+mat-chip.positive-chip .chip-text {
+  color: #317e35 !important;
 }
 
 mat-chip.negative-chip {
   background-color: #F5D3CD !important;
-  color: #B71C1C;
+  color: #B71C1C !important;
+}
+
+mat-chip.negative-chip .chip-text {
+  color: #B71C1C !important;
 }
 
 mat-chip.mixed-chip {
   background-color: #FFF3CD !important;
-  color: #8A6D3B;
+  color: #8A6D3B !important;
 }
 
-/* Rating */
-.rating-display {
-  display: flex;
-  align-items: center;
-  margin: 16px 0;
-}
-
-.rating-display mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
-.rating-value {
-  margin-left: 8px;
-  font-weight: 500;
-  color: #757575;
+mat-chip.mixed-chip .chip-text {
+  color: #8A6D3B !important;
 }
 
 /* Content */
+mat-card-content {
+  padding-left: 30px;
+}
+
 .review-description {
   font-size: 14px;
   line-height: 1.6;
@@ -227,7 +215,7 @@ mat-card-actions {
   font-weight: 500;
 }
 
-/* Loading */
+/* Loading & Empty States */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -250,7 +238,6 @@ mat-card-actions {
   100% { transform: rotate(360deg); }
 }
 
-/* Empty State */
 .empty-state {
   text-align: center;
   padding: 60px 0;
@@ -275,7 +262,7 @@ mat-card-actions {
   font-size: 16px;
 }
 
-/* Compact Pagination */
+/* Pagination */
 .pagination-container {
   margin: 30px 0;
   display: flex;
@@ -374,18 +361,9 @@ mat-card-actions {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-
-  .hero-section {
-    padding: 60px 0;
-  }
-
-  .hero-title {
-    font-size: 2.2rem;
-  }
-
-  .hero-description {
-    font-size: 1.1rem;
-  }
+  .hero-section { padding: 60px 0; }
+  .hero-title { font-size: 2.2rem; }
+  .hero-description { font-size: 1.1rem; }
 }
 
 @media (max-width: 600px) {
@@ -393,36 +371,32 @@ mat-card-actions {
     padding: 40px 0;
     border-radius: 0 0 15px 15px;
   }
-
-  .hero-title {
-    font-size: 1.8rem;
-  }
-
+  .hero-title { font-size: 1.8rem; }
   .hero-description {
     font-size: 1rem;
     margin-bottom: 20px;
   }
-
-  .review-card {
-    border-radius: 12px;
-  }
-
+  .review-card { border-radius: 12px; }
   .pagination-container {
     margin: 20px 0;
     flex-direction: column;
     gap: 12px;
   }
-
-  .pagination-info {
-    margin-right: 0;
+  .pagination-info { margin-right: 0; }
+  mat-card-header { padding-right: 85px; }
+  mat-card-title {
+    font-size: 14px;
+    margin-right: 75px;
   }
-
-  .search-results-header {
-    padding: 15px;
-    margin-bottom: 20px;
+  .review-type-chip {
+    max-width: 80px;
+    font-size: 12px;
   }
-
-  .search-results-header h2 {
-    font-size: 1.25rem;
+  mat-chip.positive-chip,
+  mat-chip.negative-chip,
+  mat-chip.mixed-chip {
+    font-size: 12px;
+    height: 26px;
+    padding: 0 8px;
   }
 }
