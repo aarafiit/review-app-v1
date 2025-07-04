@@ -1,0 +1,119 @@
+<div class="analytics-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="header-title">Companies & Organizations</h1>
+        <p class="header-subtitle">Browse and discover experiences with different organizations.</p>
+      </div>
+      <div class="header-controls">
+        <button mat-icon-button (click)="refreshData()" matTooltip="Refresh Data">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-icon class="loading-icon">sync</mat-icon>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error && !isLoading">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Failed to Load Data</h3>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Try Again
+    </button>
+  </div>
+
+  <!-- Organizations Grid -->
+  <div class="organizations-grid" *ngIf="!isLoading && !error && analyticData && analyticData.length > 0">
+    <div class="org-card" *ngFor="let data of analyticData; trackBy: trackByInstituteId"
+         (click)="viewOrganizationDetails(data.instituteId)">
+
+      <!-- Organization Header -->
+      <div class="org-header">
+        <div class="org-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="org-info">
+          <h3 class="org-name">{{ data.instituteName }}</h3>
+          <div class="org-rating">
+            <mat-icon class="star">star</mat-icon>
+            <span>{{ formatPercentage(data.positiveReviewPercentage) }} Positive</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="org-stats">
+        <!-- Total Reviews -->
+        <div class="stat-row">
+          <span class="stat-label">Total Reviews</span>
+          <span class="stat-value">{{ data.totalReviews }}</span>
+        </div>
+
+        <!-- Positive Reviews -->
+        <div class="stat-row">
+          <div class="stat-label">
+            <div class="stat-dot positive"></div>
+            <span>Positive</span>
+          </div>
+          <span class="stat-value">{{ data.totalPositiveReviews }}</span>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="data.positiveReviewPercentage"
+          color="primary"
+          class="progress-bar">
+        </mat-progress-bar>
+
+        <!-- Negative Reviews -->
+        <div class="stat-row">
+          <div class="stat-label">
+            <div class="stat-dot negative"></div>
+            <span>Negative</span>
+          </div>
+          <span class="stat-value">{{ data.totalNegativeReviews }}</span>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="data.negativeReviewPercentage"
+          color="warn"
+          class="progress-bar">
+        </mat-progress-bar>
+
+        <!-- Mixed Reviews -->
+        <div class="stat-row">
+          <div class="stat-label">
+            <div class="stat-dot mixed"></div>
+            <span>Mixed</span>
+          </div>
+          <span class="stat-value">{{ data.totalMixedReviews }}</span>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="data.mixedReviewPercentage"
+          color="accent"
+          class="progress-bar">
+        </mat-progress-bar>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && !error && (!analyticData || analyticData.length === 0)">
+    <mat-icon class="empty-icon">analytics</mat-icon>
+    <h3>No Analytics Data Available</h3>
+    <p>There's no data available for the selected time period.</p>
+    <button mat-raised-button color="primary" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      Refresh Data
+    </button>
+  </div>
+</div>

@@ -1,0 +1,390 @@
+/* Analytics Dashboard Styles */
+
+.analytics-container {
+  min-height: 100vh;
+  background: white;
+  padding: 2rem;
+}
+
+/* Header Styles */
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.period-selector {
+  min-width: 200px;
+}
+
+/* Loading and Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-icon,
+.error-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+}
+
+.loading-icon {
+  animation: spin 1.5s linear infinite;
+  color: #667eea;
+}
+
+.error-icon {
+  color: #ef4444;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.error-container p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Organizations Grid */
+.organizations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.org-card {
+  background: white;
+  border: 2px solid #f0f0f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.org-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  transform: translateY(-3px);
+}
+
+/* Organization Header */
+.org-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.org-icon {
+  width: 40px;
+  height: 40px;
+  background: #f0f4ff;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.org-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: #3f51b5
+}
+
+.org-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.org-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.org-rating {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.org-rating .star {
+  color: #fbbf24;
+  margin-right: 0.25rem;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Organization Statistics */
+.org-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.stat-dot.positive {
+  background: #10b981;
+}
+
+.stat-dot.negative {
+  background: #ef4444;
+}
+
+.stat-dot.mixed {
+  background: #f59e0b;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.progress-bar {
+  height: 12px !important;
+  border-radius: 6px !important;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+}
+
+/* Progress bar customization */
+::ng-deep .mat-progress-bar-fill::after {
+  border-radius: 6px;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+  border-radius: 6px;
+}
+
+/* Progress bar colors */
+::ng-deep .mat-progress-bar.mat-primary .mat-progress-bar-fill::after {
+  background-color: #10b981 !important; /* Green for positive */
+}
+
+::ng-deep .mat-progress-bar.mat-warn .mat-progress-bar-fill::after {
+  background-color: #ef4444 !important; /* Red for negative */
+}
+
+::ng-deep .mat-progress-bar.mat-accent .mat-progress-bar-fill::after {
+  background-color: #f59e0b !important; /* Yellow for mixed */
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analytics-container {
+    padding: 1rem;
+  }
+
+  .header-title {
+    font-size: 2rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-controls {
+    justify-content: stretch;
+  }
+
+  .period-selector {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .organizations-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .org-card {
+    padding: 1.25rem;
+  }
+
+  .org-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .org-icon mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .org-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .analytics-container {
+    padding: 0.75rem;
+  }
+
+  .header-title {
+    font-size: 1.75rem;
+  }
+
+  .org-card {
+    padding: 1rem;
+  }
+
+  .org-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .org-stats {
+    gap: 0.4rem;
+  }
+}
+
+
+
+.org-card:hover .org-name {
+  color: #6366f1;
+}
+
+/* Animation for loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.org-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Stagger animation for cards */
+.org-card:nth-child(1) { animation-delay: 0.1s; }
+.org-card:nth-child(2) { animation-delay: 0.2s; }
+.org-card:nth-child(3) { animation-delay: 0.3s; }
+.org-card:nth-child(4) { animation-delay: 0.4s; }
+.org-card:nth-child(5) { animation-delay: 0.5s; }
+.org-card:nth-child(6) { animation-delay: 0.6s; }

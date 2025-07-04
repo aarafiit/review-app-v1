@@ -4,6 +4,7 @@ import {NgModule} from "@angular/core";
 import {ReviewsComponent} from "./reviews/reviews.component";
 import {ReviewFormComponent} from "./review-form/review-form.component";
 import {ReviewDetailsComponent} from "./review-details/review-details.component";
+import {AnalyticsComponent} from "./analytics/analytics.component";
 
 export const routes: Routes = [
   {
@@ -21,5 +22,9 @@ export const routes: Routes = [
   {
     path: 'review/:id',
     component: ReviewDetailsComponent
+  },
+  {
+    path: 'analytics',
+    component: AnalyticsComponent
   }
 ];

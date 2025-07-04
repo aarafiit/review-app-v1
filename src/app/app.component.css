@@ -8,12 +8,14 @@
 .app-footer {
   background-color: #3f51b5;
   color: white;
-  padding: 20px 0; /* Equal padding top and bottom for centering */
+  padding: 20px 0;
   margin-top: 30px;
-  display: flex; /* Use flexbox for vertical centering */
-  align-items: center; /* Center content vertically */
-  min-height: 80px; /* Set minimum height for consistent centering */
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  min-height: 80px;
 }
+
 
 .footer-container {
   max-width: 1200px;
@@ -21,9 +23,10 @@
   padding: 0 20px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center; /* Center items vertically within container */
+  align-items: center;
+  justify-content: center; /* Optional: center items inside if needed */
   width: 100%;
+  text-align: center; /* Optional for centering text */
 }
 
 .footer-section {
