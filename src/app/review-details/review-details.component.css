@@ -1,7 +1,7 @@
 /* Review Details Component Styles */
 
 .review-details-container {
-  max-width: 700px; /* Decreased from 800px */
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -28,7 +28,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
-  position: relative; /* For positioning the chip */
+  position: relative;
 }
 
 /* Review type chip positioned inside card header at top-right */
@@ -37,13 +37,6 @@
   top: 16px;
   right: 16px;
   z-index: 10;
-}
-
-.review-content {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #333;
-  white-space: pre-wrap;
 }
 
 .institution-avatar {
@@ -63,19 +56,72 @@
   color: #6c757d;
 }
 
+/* Review Title Section in Card Body */
+.review-title-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+}
+
+.review-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
 .rating-display {
   margin-top: 16px;
   display: flex;
   align-items: center;
 }
 
-.rating-display mat-icon {
+.rating-section {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.star.filled {
   color: #ffc107;
 }
 
-.rating-value {
-  margin-left: 8px;
+.star.empty {
+  color: #e9ecef;
+}
+
+.rating-text {
   font-weight: 500;
+  color: #666;
+  font-size: 16px;
+}
+
+.review-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.review-description {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #444;
+  margin-top: 8px;
 }
 
 .review-type-chip mat-chip {
@@ -84,33 +130,75 @@
 
 /* Ensure card header content doesn't overlap with chip */
 mat-card-header {
-  padding-right: 120px !important; /* Add space for the chip on the right */
+  padding-right: 120px !important;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .review-details-container {
     padding: 0 16px;
-    max-width: 100%; /* Allow full width on mobile */
+    max-width: 100%;
   }
 
   .review-card {
     margin: 0 -8px 16px;
   }
 
-  /* Maintain comment spacing on mobile */
+  .review-title {
+    font-size: 20px;
+  }
+
+  mat-card-header {
+    padding-right: 100px !important;
+  }
+
   .comment-card {
     margin-left: -8px;
     margin-right: -8px;
-    margin-bottom: 20px; /* Keep increased spacing */
+    margin-bottom: 20px;
     border-radius: 4px;
+  }
+}
+
+@media (max-width: 576px) {
+  .review-title {
+    font-size: 18px;
+  }
+
+  .review-title-section {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .rating-section {
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+
+  .star {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .rating-text {
+    font-size: 14px;
+  }
+
+  mat-card-header {
+    padding-right: 90px !important;
+  }
+
+  .review-type-badge {
+    top: 12px;
+    right: 12px;
   }
 }
 
 mat-chip.positive-chip,
 mat-chip.negative-chip,
 mat-chip.mixed-chip {
-  background-color: transparent;
+  background-color: transparent !important;
   background-clip: padding-box;
   font-weight: bold;
   font-size: 13px;
@@ -125,27 +213,44 @@ mat-chip.mixed-chip {
   text-align: center;
   font-family: inherit;
   letter-spacing: 0.3px;
+  border: none !important;
 }
 
-/* Background and text color by review type */
+/* Background and text color by review type with higher specificity */
 mat-chip.positive-chip {
   background-color: #C3E6CD !important;
-  color: #51d558;
+  color: #317e35 !important;
+}
+
+mat-chip.positive-chip .chip-text,
+mat-chip.positive-chip span {
+  color: #317e35 !important;
 }
 
 mat-chip.negative-chip {
   background-color: #F5D3CD !important;
-  color: #B71C1C;
+  color: #B71C1C !important;
+}
+
+mat-chip.negative-chip .chip-text,
+mat-chip.negative-chip span {
+  color: #B71C1C !important;
 }
 
 mat-chip.mixed-chip {
-  background-color: #FFF3CD !important; /* Soft yellow */
-  color: #8A6D3B;
+  background-color: #FFF3CD !important;
+  color: #8A6D3B !important;
+}
+
+mat-chip.mixed-chip .chip-text,
+mat-chip.mixed-chip span {
+  color: #8A6D3B !important;
 }
 
 .chip-text {
   text-align: center;
   width: 100%;
+  color: inherit !important;
 }
 
 /* Comment Section Styles */
@@ -170,14 +275,13 @@ mat-chip.mixed-chip {
   width: 100%;
 }
 
-/* Increased comment box size */
 .comment-input {
   width: 100%;
   margin-top: 8px;
 }
 
 .comment-input textarea {
-  min-height: 100px !important; /* Increased from 120px */
+  min-height: 100px !important;
   resize: vertical;
 }
 
@@ -188,7 +292,7 @@ mat-chip.mixed-chip {
 .comment-card {
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px; /* Increased from 16px to add more space */
+  margin-bottom: 20px;
   padding: 16px;
 }
 
@@ -221,16 +325,180 @@ mat-chip.mixed-chip {
   margin-top: 1.5rem;
 }
 
-/* Mobile Responsiveness for Comments */
+/* Additional styling for better visual hierarchy */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.section-title mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #6a11cb;
+}
+
+.comment-count {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.back-button {
+  margin-bottom: 20px;
+  color: #6a11cb;
+}
+
+.back-button mat-icon {
+  margin-right: 8px;
+}
+
+/* Loading and error states */
+.loading-state,
+.not-found-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.comment-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc3545;
+  background-color: #f8d7da;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.comments-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+  color: #6a11cb;
+}
+
+.loading-spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-avatar mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #6c757d;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.comment-author {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+  white-space: pre-wrap;
+}
+
+/* View Comments Button Container */
+.view-comments-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.view-comments-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #6a11cb;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.view-comments-btn:hover:not(:disabled) {
+  background-color: #6a11cb;
+  color: white;
+  border-color: #6a11cb;
+  transform: translateY(-1px);
+}
+
+.view-comments-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.view-comments-btn .loading-icon {
+  animation: spin 1.5s linear infinite;
+}
+
+/* Responsive adjustments for view comments button */
 @media (max-width: 768px) {
-  .comment-form-card {
-    margin-left: -8px;
-    margin-right: -8px;
-    border-radius: 4px;
+  .view-comments-container {
+    justify-content: center;
+    margin-top: 12px;
   }
 
-  /* Ensure comment box remains large on mobile */
-  .comment-input textarea {
-    min-height: 120px !important; /* Slightly smaller on mobile but still increased */
+  .view-comments-btn {
+    padding: 6px 12px;
+    font-size: 14px;
   }
 }

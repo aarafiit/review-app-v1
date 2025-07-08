@@ -81,8 +81,13 @@ export class ReviewService {
     );
   }
 
-  getComments(reviewId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/reviews/${reviewId}/comment`).pipe(
+  // Updated existing method to support pagination
+  getComments(reviewId: string, page: number = 0, size: number = 5): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<any>(`${this.apiUrl}/reviews/${reviewId}/comment`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching comments:', error);
         // Fallback to a default paginated object
@@ -90,9 +95,9 @@ export class ReviewService {
           content: [],
           totalPages: 0,
           totalElements: 0,
-          number: 0,
-          size: 0,
-          first: true,
+          number: page,
+          size: size,
+          first: page === 0,
           last: true
         });
       })

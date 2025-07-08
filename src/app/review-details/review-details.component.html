@@ -16,29 +16,28 @@
   <!-- Review Details Content -->
   <div class="review-content" *ngIf="!isLoading && review && !error">
 
-    <!-- Header with Back Button and Review Type -->
+    <!-- Header with Back Button -->
     <div class="review-header">
       <button mat-button class="back-button" (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
         <span>Back to Reviews</span>
       </button>
-
-
     </div>
 
     <!-- Main Review Card -->
     <mat-card class="main-review-card mt-5">
+      <!-- Card Header with University Name -->
       <mat-card-header>
         <div mat-card-avatar class="institution-avatar">
           <mat-icon>school</mat-icon>
         </div>
-        <mat-card-title>{{ review.title }}</mat-card-title>
+        <mat-card-title>{{ review.instituteName }}</mat-card-title>
         <mat-card-subtitle>
           <div class="subtitle-content">
-            <span class="institution-name">{{ review.instituteName }}</span>
             <span class="review-date">{{ review.createdAt | date : 'MMM dd, yyyy' }}</span>
           </div>
         </mat-card-subtitle>
+        <!-- Review Type Badge -->
         <div class="review-type-badge">
           <mat-chip
             [ngClass]="{
@@ -55,6 +54,11 @@
       </mat-card-header>
 
       <mat-card-content>
+        <!-- Review Title -->
+        <div class="review-title-section">
+          <h2 class="review-title">{{ review.title }}</h2>
+        </div>
+
         <!-- Star Rating Display -->
         <div class="rating-section" *ngIf="review.rating">
           <div class="star-rating">
@@ -94,7 +98,7 @@
                 rows="4"
                 placeholder="Write your comment here..."
                 maxlength="500"
-                >
+              >
               </textarea>
               <mat-hint align="end">{{ newComment?.length || 0 }}/500</mat-hint>
             </mat-form-field>
@@ -143,6 +147,21 @@
             <div class="comment-text">{{ comment.comment }}</div>
           </mat-card-content>
         </mat-card>
+
+        <!-- View More/Less Button -->
+        <div class="view-comments-container" *ngIf="shouldShowViewCommentsButton()">
+          <button
+            mat-button
+            color="primary"
+            class="view-comments-btn"
+            (click)="onViewCommentsToggle()"
+            [disabled]="isLoadingMoreComments">
+            <mat-icon *ngIf="isLoadingMoreComments" class="loading-icon">sync</mat-icon>
+            <mat-icon *ngIf="!isLoadingMoreComments && hasMoreComments">expand_more</mat-icon>
+            <mat-icon *ngIf="!isLoadingMoreComments && isAllCommentsLoaded && currentCommentsPage > 0">expand_less</mat-icon>
+            <span>{{ getViewCommentsButtonText() }}</span>
+          </button>
+        </div>
 
         <!-- Empty Comments State -->
         <div *ngIf="comments.length === 0" class="no-comments-message">

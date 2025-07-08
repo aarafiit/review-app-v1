@@ -144,7 +144,7 @@
   font-size: 22px;
   width: 22px;
   height: 22px;
-  color: #3f51b5
+  color: #3f51b5;
 }
 
 .org-info {
@@ -232,16 +232,7 @@
   overflow: hidden;
 }
 
-/* Progress bar customization */
-::ng-deep .mat-progress-bar-fill::after {
-  border-radius: 6px;
-}
-
-::ng-deep .mat-progress-bar-buffer {
-  border-radius: 6px;
-}
-
-/* Progress bar colors */
+/* Progress Bar Color Overrides - FIXED */
 ::ng-deep .mat-progress-bar.mat-primary .mat-progress-bar-fill::after {
   background-color: #10b981 !important; /* Green for positive */
 }
@@ -252,6 +243,41 @@
 
 ::ng-deep .mat-progress-bar.mat-accent .mat-progress-bar-fill::after {
   background-color: #f59e0b !important; /* Yellow for mixed */
+}
+
+/* For newer Angular Material versions (v15+) */
+::ng-deep .mat-progress-bar.mat-primary .mdc-linear-progress__bar-inner {
+  border-color: #10b981 !important;
+}
+
+::ng-deep .mat-progress-bar.mat-warn .mdc-linear-progress__bar-inner {
+  border-color: #ef4444 !important;
+}
+
+::ng-deep .mat-progress-bar.mat-accent .mdc-linear-progress__bar-inner {
+  border-color: #f59e0b !important;
+}
+
+/* Progress bar buffer colors */
+::ng-deep .mat-progress-bar.mat-primary .mat-progress-bar-buffer {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+::ng-deep .mat-progress-bar.mat-warn .mat-progress-bar-buffer {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+::ng-deep .mat-progress-bar.mat-accent .mat-progress-bar-buffer {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Progress bar customization */
+::ng-deep .mat-progress-bar-fill::after {
+  border-radius: 6px;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+  border-radius: 6px;
 }
 
 /* Empty State */
@@ -287,6 +313,35 @@
   color: #666;
   margin-bottom: 1.5rem;
 }
+
+/* Hover Effects */
+.org-card:hover .org-name {
+  color: #6366f1;
+}
+
+/* Animation for loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.org-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Stagger animation for cards */
+.org-card:nth-child(1) { animation-delay: 0.1s; }
+.org-card:nth-child(2) { animation-delay: 0.2s; }
+.org-card:nth-child(3) { animation-delay: 0.3s; }
+.org-card:nth-child(4) { animation-delay: 0.4s; }
+.org-card:nth-child(5) { animation-delay: 0.5s; }
+.org-card:nth-child(6) { animation-delay: 0.6s; }
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -358,33 +413,3 @@
     gap: 0.4rem;
   }
 }
-
-
-
-.org-card:hover .org-name {
-  color: #6366f1;
-}
-
-/* Animation for loading */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.org-card {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Stagger animation for cards */
-.org-card:nth-child(1) { animation-delay: 0.1s; }
-.org-card:nth-child(2) { animation-delay: 0.2s; }
-.org-card:nth-child(3) { animation-delay: 0.3s; }
-.org-card:nth-child(4) { animation-delay: 0.4s; }
-.org-card:nth-child(5) { animation-delay: 0.5s; }
-.org-card:nth-child(6) { animation-delay: 0.6s; }

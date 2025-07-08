@@ -41,6 +41,7 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
   isLoading = true;
   isLoadingComments = false;
   isSubmittingComment = false;
+  isLoadingMoreComments = false; // New loading state for pagination
 
   // Error states
   error: string | null = null;
@@ -49,9 +50,13 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
   // Form data
   newComment: string = '';
 
-  // Pagination (if needed)
-  totalCommentPages: number = 0;
-  totalComments: number = 0;
+  // Pagination properties
+  currentCommentsPage = 0;
+  commentsPageSize = 5; // Show 5 comments per page
+  totalCommentPages = 0;
+  totalComments = 0;
+  hasMoreComments = false;
+  isAllCommentsLoaded = false;
 
   // Subscriptions for cleanup
   private subscriptions: Subscription = new Subscription();
@@ -88,13 +93,11 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
    */
   private isValidReview(review: any): boolean {
     if (!review) return false;
-
-    // Review is valid if it has at least title OR description
     return !!(review.title?.trim() || review.description?.trim());
   }
 
   /**
-   * Load review details and comments
+   * Load review details and initial comments
    */
   private loadReviewDetails(): void {
     this.isLoading = true;
@@ -107,8 +110,8 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
         if (this.isValidReview(review)) {
           this.review = review;
           this.isLoading = false;
-          // Load comments using the route param ID, not review.id (which might be null)
-          this.loadComments();
+          // Load first page of comments
+          this.loadComments(0, true);
         } else {
           console.warn('Invalid review data received:', review);
           this.error = 'Review not found or invalid data';
@@ -124,49 +127,144 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(reviewSubscription);
   }
+
   /**
-   * Load comments for the current review
+   * Load comments with pagination support
    */
-  private loadComments(): void {
+  private loadComments(page: number = 0, resetComments: boolean = false): void {
     if (!this.reviewId) return;
 
-    this.isLoadingComments = true;
+    this.isLoadingComments = resetComments;
+    this.isLoadingMoreComments = !resetComments;
     this.commentError = null;
 
-    const commentsSubscription = this.reviewService.getComments(this.reviewId).subscribe({
+    const commentsSubscription = this.reviewService.getComments(
+      this.reviewId,
+      page,
+      this.commentsPageSize
+    ).subscribe({
       next: (response) => {
         try {
-          // Handle both paginated and simple array responses
+          console.log('Comments response:', response);
+
           if (response && response.content) {
-            this.comments = response.content || [];
+            if (resetComments) {
+              // Reset comments array for first page or "View Less"
+              this.comments = response.content || [];
+              this.currentCommentsPage = 0;
+            } else {
+              // Append new comments for "View More"
+              this.comments = [...this.comments, ...(response.content || [])];
+              this.currentCommentsPage = page;
+            }
+
             this.totalCommentPages = response.totalPages || 0;
             this.totalComments = response.totalElements || 0;
+
+            // Check if there are more comments to load
+            this.hasMoreComments = (this.currentCommentsPage + 1) < this.totalCommentPages;
+            this.isAllCommentsLoaded = this.currentCommentsPage >= (this.totalCommentPages - 1);
+
           } else if (Array.isArray(response)) {
-            this.comments = response;
+            // Handle non-paginated response (fallback)
+            this.comments = resetComments ? response : [...this.comments, ...response];
             this.totalComments = response.length;
+            this.hasMoreComments = false;
+            this.isAllCommentsLoaded = true;
           } else {
-            this.comments = [];
+            this.comments = resetComments ? [] : this.comments;
             this.totalComments = 0;
+            this.hasMoreComments = false;
+            this.isAllCommentsLoaded = true;
           }
 
-          console.log('Comments loaded successfully:', this.comments);
+          console.log('Comments loaded successfully:', {
+            commentsCount: this.comments.length,
+            currentPage: this.currentCommentsPage,
+            totalPages: this.totalCommentPages,
+            hasMore: this.hasMoreComments,
+            isAllLoaded: this.isAllCommentsLoaded
+          });
+
           this.isLoadingComments = false;
+          this.isLoadingMoreComments = false;
         } catch (error) {
           console.error('Error processing comments response:', error);
           this.commentError = 'Failed to process comments';
           this.isLoadingComments = false;
+          this.isLoadingMoreComments = false;
         }
       },
       error: (err) => {
         console.error('Error loading comments:', err);
         this.commentError = 'Failed to load comments';
-        this.comments = [];
-        this.totalComments = 0;
+        if (resetComments) {
+          this.comments = [];
+          this.totalComments = 0;
+        }
+        this.hasMoreComments = false;
+        this.isAllCommentsLoaded = true;
         this.isLoadingComments = false;
+        this.isLoadingMoreComments = false;
       }
     });
 
     this.subscriptions.add(commentsSubscription);
+  }
+
+  /**
+   * Load more comments (next page)
+   */
+  loadMoreComments(): void {
+    if (this.hasMoreComments && !this.isLoadingMoreComments) {
+      const nextPage = this.currentCommentsPage + 1;
+      this.loadComments(nextPage, false);
+    }
+  }
+
+  /**
+   * Load less comments (back to first page only)
+   */
+  loadLessComments(): void {
+    if (!this.isLoadingComments) {
+      this.loadComments(0, true);
+    }
+  }
+
+  /**
+   * Handle view more/less button click
+   */
+  onViewCommentsToggle(): void {
+    if (this.isAllCommentsLoaded && this.currentCommentsPage > 0) {
+      // Show "View Less" - go back to first page only
+      this.loadLessComments();
+    } else if (this.hasMoreComments) {
+      // Show "View More" - load next page
+      this.loadMoreComments();
+    }
+  }
+
+  /**
+   * Get the button text based on current state
+   */
+  getViewCommentsButtonText(): string {
+    if (this.isLoadingMoreComments) {
+      return 'Loading...';
+    } else if (this.isAllCommentsLoaded && this.currentCommentsPage > 0) {
+      return 'View Less';
+    } else if (this.hasMoreComments) {
+      const remainingComments = this.totalComments - this.comments.length;
+      return `View More (${remainingComments} more)`;
+    }
+    return '';
+  }
+
+  /**
+   * Check if view comments button should be shown
+   */
+  shouldShowViewCommentsButton(): boolean {
+    return this.totalComments > this.commentsPageSize &&
+      (this.hasMoreComments || (this.isAllCommentsLoaded && this.currentCommentsPage > 0));
   }
 
   /**
@@ -194,8 +292,8 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
         this.newComment = '';
         this.isSubmittingComment = false;
 
-        // Reload comments to show the new comment
-        this.loadComments();
+        // Reload comments from first page to show new comment
+        this.loadComments(0, true);
       },
       error: (err) => {
         console.error('Error submitting comment:', err);
