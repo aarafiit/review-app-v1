@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, tap, catchError, of} from 'rxjs';
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environment/environment.development";
 import { Review } from '../../model/Review';
 import {Comment} from "../../model/comment.model";
+import {FingerPrintService} from "../../rate-limit/finger-print.service";
 
 @Injectable({
   providedIn: 'root' // This makes the service available application-wide
@@ -17,7 +18,8 @@ export class ReviewService {
   private searchLoadingSubject = new BehaviorSubject<boolean>(false);
   public searchLoading$ = this.searchLoadingSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private fingerprintService: FingerPrintService) {
     this.getAllReviews(0,10);
   }
 
@@ -63,8 +65,16 @@ export class ReviewService {
     );
   }
 
-  likeReview(reviewId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/like`, {}).pipe(
+  private getHeaders(): HttpHeaders {
+    const fingerprint = this.fingerprintService.generateFingerprint();
+    return new HttpHeaders({
+      'X-Client-Fingerprint': fingerprint
+    });
+  }
+
+  likeReview(reviewId: string,anonId : string): Observable<any> {
+    const params = new HttpParams().set('anonId', anonId);
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/like`, {}, {headers: this.getHeaders() }).pipe(
       catchError(error => {
         console.error('Error liking review:', error);
         return of({});
@@ -73,7 +83,7 @@ export class ReviewService {
   }
 
   dislikeReview(reviewId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/dislike`, {}).pipe(
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/dislike`, {}, {headers: this.getHeaders() }).pipe(
       catchError(error => {
         console.error('Error disliking review:', error);
         return of({});

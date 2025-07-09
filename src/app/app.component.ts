@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {ReviewsComponent} from "./reviews/reviews.component";
 import {SearchableInputComponent} from "./searchable-input/searchable-input.component";
@@ -27,5 +27,20 @@ import {SafeHtmlPipe} from "./safe-html.pipe";
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  private readonly storageKey = 'APP_ANON_LOCAL_KEY';
+
+  ngOnInit(): void {
+    this.ensureAnonIdExists();
+  }
+
+  private ensureAnonIdExists() : void{
+    if(!localStorage.getItem(this.storageKey)){
+      const anonId = crypto.randomUUID();
+      localStorage.setItem(this.storageKey, anonId);
+    }
+  }
+
+
+
 }

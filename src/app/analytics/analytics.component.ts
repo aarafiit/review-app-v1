@@ -72,7 +72,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
     const analyticsSubscription = this.analyticsService.getAnalyticsData(this.searchParam).subscribe({
       next: (response: HttpResponse<AnalyticsData[]>) => {
-        console.log('Analytics data received:', response.body);
         this.analyticData = response.body || [];
         this.isLoading = false;
       },
@@ -92,7 +91,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   viewOrganizationDetails(orgId: number): void {
-    console.log('Navigate to organization details:', orgId);
   }
 
   // Helper method to get organization alias from institute name

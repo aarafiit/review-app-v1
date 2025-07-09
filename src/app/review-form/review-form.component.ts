@@ -295,7 +295,6 @@ export class ReviewFormComponent implements AfterViewInit {
 
     this.reviewService.submitReview(reviewData, this.page, this.size).subscribe({
       next: (response) => {
-        console.log('Review submitted successfully:', response);
         this.resetForm();
         this.reviewSubmitted.emit(true);
         this.isSubmitting = false;

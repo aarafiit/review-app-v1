@@ -105,7 +105,6 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
 
     const reviewSubscription = this.reviewService.getReviewById(this.reviewId).subscribe({
       next: (review) => {
-        console.log('Received review data:', review);
 
         if (this.isValidReview(review)) {
           this.review = review;
@@ -145,7 +144,6 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         try {
-          console.log('Comments response:', response);
 
           if (response && response.content) {
             if (resetComments) {
@@ -177,14 +175,6 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
             this.hasMoreComments = false;
             this.isAllCommentsLoaded = true;
           }
-
-          console.log('Comments loaded successfully:', {
-            commentsCount: this.comments.length,
-            currentPage: this.currentCommentsPage,
-            totalPages: this.totalCommentPages,
-            hasMore: this.hasMoreComments,
-            isAllLoaded: this.isAllCommentsLoaded
-          });
 
           this.isLoadingComments = false;
           this.isLoadingMoreComments = false;
@@ -286,8 +276,6 @@ export class ReviewDetailsComponent implements OnInit, OnDestroy {
 
     const submitSubscription = this.reviewService.submitComment(this.reviewId, commentData).subscribe({
       next: () => {
-        console.log('Comment submitted successfully');
-
         // Clear the form
         this.newComment = '';
         this.isSubmittingComment = false;

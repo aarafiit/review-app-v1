@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import {CommonModule, DatePipe} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClient, HttpClientModule, HttpHeaders} from '@angular/common/http';
 import { Observable, Subject, catchError, of, takeUntil, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 // import { ReviewsService, ReviewFilters } from './reviews.service';
 import {MatPaginator, PageEvent, MatPaginatorModule} from "@angular/material/paginator";
@@ -16,6 +16,7 @@ import {MatCardModule} from "@angular/material/card";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {SafeHtmlPipe} from "../safe-html.pipe";
+import {FingerPrintService} from "../rate-limit/finger-print.service";
 
 @Component({
   selector: 'app-review-list',
@@ -78,7 +79,6 @@ export class ReviewListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     const reviewsSub = this.reviewService.reviews$.subscribe(response => {
       if (response) {
-        console.log(response.content);
         this.reviewList = response.content;
         this.totalItems = response.totalElements;
         this.pageSize = response.size;
@@ -175,12 +175,14 @@ export class ReviewListComponent implements OnInit, OnDestroy {
     }
   }
 
+  userHasLiked = false;
+
   likeReview(reviewId: string): void {
     if (reviewId) {
-      this.reviewService.likeReview(reviewId).subscribe({
+      const localAnonId = this.getAnonId();
+      this.reviewService.likeReview(reviewId,localAnonId).subscribe({
         next: () => {
-          console.log('Review liked successfully');
-          // Optionally refresh the reviews list
+          this.userHasLiked = true;
           this.reviewService.getAllReviews(this.currentPage, this.pageSize);
         },
         error: (err) => console.error('Error liking review:', err)
@@ -192,7 +194,6 @@ export class ReviewListComponent implements OnInit, OnDestroy {
     if (reviewId) {
       this.reviewService.dislikeReview(reviewId).subscribe({
         next: () => {
-          console.log('Review disliked successfully');
           // Optionally refresh the reviews list
           this.reviewService.getAllReviews(this.currentPage, this.pageSize);
         },
@@ -248,4 +249,9 @@ export class ReviewListComponent implements OnInit, OnDestroy {
 
   // Math utility for template
   protected readonly Math = Math;
+  private readonly storageKey = 'APP_ANON_LOCAL_KEY';
+  //get anonId
+  getAnonId(): string {
+    return localStorage.getItem(this.storageKey) || '';
+  }
 }

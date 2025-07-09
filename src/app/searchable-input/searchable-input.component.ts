@@ -81,8 +81,6 @@ export class SearchableInputComponent {
   private getFromUrl(text: string): Observable<any> {
     let params = new HttpParams();
     params = params.set('searchParam', text);
-    console.log(this.urlToSearch);
-
     return this.http.get(`${environment.apiUrl + this.urlToSearch}`, { params }).pipe(
       catchError((error) => {
         console.error('HTTP Error:', error);
