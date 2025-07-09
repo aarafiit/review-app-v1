@@ -26,5 +26,10 @@ export const routes: Routes = [
   {
     path: 'analytics',
     component: AnalyticsComponent
+  },
+  {
+    path: '**',
+    redirectTo: 'home',
+    pathMatch: 'full'
   }
 ];
