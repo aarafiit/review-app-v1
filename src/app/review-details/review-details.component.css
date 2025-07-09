@@ -451,6 +451,8 @@ mat-chip.mixed-chip span {
   line-height: 1.5;
   color: #444;
   white-space: pre-wrap;
+  overflow-y: auto;
+  word-break: break-word;
 }
 
 /* View Comments Button Container */
